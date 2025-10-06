@@ -1,0 +1,28 @@
+{
+  "app": {
+    "title": "SD Private AI",
+    "subtitle": "Your Personal Offline AI Knowledge Base"
+  },
+  "navigation": {
+    "home": "Home",
+    "documents": "Documents",
+    "search": "Search",
+    "settings": "Settings"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "upload": "Upload",
+    "download": "Download",
+    "search": "Search"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "noData": "No data available"
+  }
+}

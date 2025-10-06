@@ -1,0 +1,52 @@
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import MainLayout from './components/layout/MainLayout';
+import { useTheme } from './hooks/useTheme';
+import { initDatabase } from './services/database';
+import './App.css';
+
+function App() {
+  const { t } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    // Initialize database on app start
+    initDatabase().catch((error) => {
+      console.error('Failed to initialize database:', error);
+    });
+  }, []);
+
+  // Apply theme colors to root element
+  useEffect(() => {
+    document.documentElement.style.setProperty('--bg-color', theme.colors.background);
+    document.documentElement.style.setProperty('--text-color', theme.colors.text);
+  }, [theme]);
+
+  return (
+    <MainLayout onThemeToggle={toggleTheme}>
+      <div style={{ 
+        padding: '24px',
+        color: theme.colors.text,
+        backgroundColor: theme.colors.background 
+      }}>
+        <h2>{t('common.loading')}</h2>
+        <p>Welcome to SD Private AI!</p>
+        <p>This is the basic structure. Components will be added in future iterations.</p>
+        
+        <div style={{ marginTop: '24px' }}>
+          <h3>Next Steps:</h3>
+          <ul>
+            <li>Configure Syncfusion license key</li>
+            <li>Implement document management features</li>
+            <li>Add vector search functionality</li>
+            <li>Integrate AI models</li>
+          </ul>
+          <p>See TODO.md for complete task list.</p>
+        </div>
+      </div>
+    </MainLayout>
+  );
+}
+
+export default App;
+
