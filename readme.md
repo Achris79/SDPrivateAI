@@ -87,8 +87,27 @@ SDPrivateAI/
 - Tauri + React + TypeScript Setup
 - i18n (DE/EN)
 - Theme-System (Light/Dark)
-- Datenbank-Layer
+- Datenbank-Layer mit vollständigen CRUD-Operationen
+- SQLite mit Performance-Indizes
+- Typsichere TypeScript-API
 - Layout-Komponenten
+
+## 💾 Datenbank-Features
+
+Die App bietet eine **lokale, schnelle SQLite-Datenbankanbindung** mit:
+
+- ✅ **Minimal Dependencies** - Nur Tauri SQL Plugin
+- ✅ **Einfach zu implementieren** - Intuitive TypeScript-API
+- ✅ **Wartbar** - Saubere Code-Struktur
+- ✅ **Performant** - Automatische Indizierung
+- ✅ **Offline-fähig** - 100% lokal, keine Cloud
+
+**CRUD-Operationen für:**
+- Dokumente (erstellen, lesen, aktualisieren, löschen, suchen)
+- Embeddings (Vektoren für semantische Suche)
+- Metadaten (flexible JSON-Speicherung)
+
+Siehe [Database README](./src/services/database/README.md) für Details und Beispiele.
 
 📋 **Nächste Schritte**
 - Syncfusion-Integration
