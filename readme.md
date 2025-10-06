@@ -42,14 +42,14 @@ SQLite3 (wird automatisch eingebunden)
 
 Die vollständige Dokumentation findest du in folgenden Dateien:
 
-- **[QUICKSTART.md](./QUICKSTART.md)** - 🚀 Schnellstart-Guide (5 Minuten)
-- **[INSTALLATION.md](./INSTALLATION.md)** - 🔧 Detaillierte Installation & Setup
-- **[DOCUMENTATION.md](./DOCUMENTATION.md)** - 📖 Vollständige Projekt-Dokumentation
-- **[VECTOR_SEARCH.md](./VECTOR_SEARCH.md)** - 🔍 Vector Search & Semantische Suche
-- **[ERROR_HANDLING.md](./ERROR_HANDLING.md)** - 🛡️ Fehlerbehandlung & Defensive Programming
-- **[SECURITY.md](./SECURITY.md)** - 🔒 Sicherheitsrichtlinien & Best Practices
-- **[TODO.md](./TODO.md)** - 📝 Aufgabenliste & offene Fragen
-- **[SUMMARY.md](./SUMMARY.md)** - ✅ Projekt-Setup Übersicht
+- **[QUICKSTART.md](./docs/QUICKSTART.md)** - 🚀 Schnellstart-Guide (5 Minuten)
+- **[INSTALLATION.md](./docs/INSTALLATION.md)** - 🔧 Detaillierte Installation & Setup
+- **[DOCUMENTATION.md](./docs/DOCUMENTATION.md)** - 📖 Vollständige Projekt-Dokumentation
+- **[VECTOR_SEARCH.md](./docs/VECTOR_SEARCH.md)** - 🔍 Vector Search & Semantische Suche
+- **[ERROR_HANDLING.md](./docs/ERROR_HANDLING.md)** - 🛡️ Fehlerbehandlung & Defensive Programming
+- **[SECURITY.md](./docs/SECURITY.md)** - 🔒 Sicherheitsrichtlinien & Best Practices
+- **[TODO.md](./docs/TODO.md)** - 📝 Aufgabenliste & offene Fragen
+- **[SUMMARY.md](./docs/SUMMARY.md)** - ✅ Projekt-Setup Übersicht
 
 ## 🏃 Quick Start
 
@@ -68,7 +68,7 @@ npm run build
 npm run tauri:build
 ```
 
-Für detaillierte Anweisungen siehe [QUICKSTART.md](./QUICKSTART.md).
+Für detaillierte Anweisungen siehe [QUICKSTART.md](./docs/QUICKSTART.md).
 
 ## 📁 Projekt-Struktur
 
@@ -109,7 +109,7 @@ SDPrivateAI/
 - Cosine Similarity für Vector Search
 - `searchSimilarEmbeddings()` API
 - `semanticSearch()` für semantische Dokumentensuche
-- Vollständige Dokumentation in [VECTOR_SEARCH.md](./VECTOR_SEARCH.md)
+- Vollständige Dokumentation in [VECTOR_SEARCH.md](./docs/VECTOR_SEARCH.md)
 
 ## 💾 Datenbank-Features
 
@@ -134,7 +134,7 @@ Die App bietet eine **lokale, schnelle SQLite-Datenbankanbindung** mit:
 - Größenlimits gegen DoS
 - Defensive Validierung aller Eingaben
 
-Siehe [Database README](./src/services/database/README.md) und [ERROR_HANDLING.md](./ERROR_HANDLING.md) für Details.
+Siehe [Database README](./docs/database.md) und [ERROR_HANDLING.md](./docs/ERROR_HANDLING.md) für Details.
 
 📋 **Nächste Schritte**
 - Syncfusion-Integration
@@ -142,11 +142,11 @@ Siehe [Database README](./src/services/database/README.md) und [ERROR_HANDLING.m
 - AI-Modell-Integration
 - Feature-Entwicklung
 
-Siehe [TODO.md](./TODO.md) für Details.
+Siehe [TODO.md](./docs/TODO.md) für Details.
 
 ## 🤝 Contributing
 
-Für Beiträge und Entwicklung siehe [DOCUMENTATION.md](./DOCUMENTATION.md).
+Für Beiträge und Entwicklung siehe [DOCUMENTATION.md](./docs/DOCUMENTATION.md).
 
 ## 📄 Lizenz
 

@@ -256,7 +256,7 @@ try {
 - `ValidationError` - Eingabevalidierungsfehler
 - Alle Fehler enthalten detaillierte Context-Informationen
 
-Siehe [ERROR_HANDLING.md](../../ERROR_HANDLING.md) für vollständige Dokumentation.
+Siehe [ERROR_HANDLING.md](./ERROR_HANDLING.md) für vollständige Dokumentation.
 
 ## Migrations & Erweiterungen
 
