@@ -1,0 +1,28 @@
+{
+  "app": {
+    "title": "SD Private AI",
+    "subtitle": "Ihre Persönliche Offline-KI-Wissensdatenbank"
+  },
+  "navigation": {
+    "home": "Startseite",
+    "documents": "Dokumente",
+    "search": "Suche",
+    "settings": "Einstellungen"
+  },
+  "actions": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "upload": "Hochladen",
+    "download": "Herunterladen",
+    "search": "Suchen"
+  },
+  "common": {
+    "loading": "Lädt...",
+    "error": "Ein Fehler ist aufgetreten",
+    "success": "Erfolgreich",
+    "noData": "Keine Daten verfügbar"
+  }
+}

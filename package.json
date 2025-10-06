@@ -1,0 +1,39 @@
+{
+  "name": "sd-private-ai",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Offline AI App - Tauri + React + TypeScript + Syncfusion + SQLite",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@syncfusion/ej2-react-grids": "^26.2.10",
+    "@syncfusion/ej2-react-inputs": "^26.2.10",
+    "@syncfusion/ej2-react-buttons": "^26.2.10",
+    "@syncfusion/ej2-react-popups": "^26.2.10",
+    "@syncfusion/ej2-react-navigations": "^26.2.10",
+    "i18next": "^24.2.0",
+    "react-i18next": "^15.2.0",
+    "tauri-plugin-sql-api": "https://github.com/tauri-apps/tauri-plugin-sql#v2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.4",
+    "@tauri-apps/cli": "^2"
+  }
+}
