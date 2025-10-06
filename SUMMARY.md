@@ -197,7 +197,7 @@ npm run tauri:dev
 ### Noch zu erledigen
 Siehe [TODO.md](./TODO.md) für die vollständige Liste:
 
-1. **Syncfusion Lizenz** konfigurieren
+1. ✅ **Syncfusion Lizenz** konfigurieren (implementiert)
 2. **Vektor-DB-Lösung** wählen und implementieren
 3. **AI-Modell-Integration** umsetzen
 4. **Dokument-Management** Features
@@ -207,9 +207,9 @@ Siehe [TODO.md](./TODO.md) für die vollständige Liste:
 ## 📝 Wichtige Hinweise
 
 ### Syncfusion Lizenz
-- Lizenzschlüssel in `.env` eintragen
-- Siehe `.env.example` für Template
-- Registrierung beim App-Start implementieren
+- ✅ Lizenzschlüssel in `.env` eintragen
+- ✅ Siehe `.env.example` für Template
+- ✅ Registrierung beim App-Start implementiert (in `src/main.tsx`)
 
 ### Linux System-Dependencies
 ```bash

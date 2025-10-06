@@ -154,8 +154,13 @@ VITE_SYNCFUSION_LICENSE_KEY=your-license-key-here
 ```
 
 ### 3. Lizenz registrieren
+
+**✅ Bereits implementiert in `src/main.tsx`**
+
+Die Lizenz wird automatisch beim App-Start registriert, wenn ein gültiger Schlüssel in `.env` hinterlegt ist:
+
 ```typescript
-// In src/App.tsx oder src/main.tsx
+// Siehe src/main.tsx
 import { registerLicense } from '@syncfusion/ej2-base';
 
 const licenseKey = import.meta.env.VITE_SYNCFUSION_LICENSE_KEY;
