@@ -83,6 +83,9 @@ Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweis
   - [x] CRUD für Metadaten
   - [x] Vektor-Operationen (Basis-Funktionen)
   - [x] Performance-Indizes erstellt
+- [x] Input-Validierung implementiert
+- [x] SQL-Injection-Schutz
+- [x] Error-Handling implementiert
 
 ### Phase 5: Vektor-Suche
 - [ ] Vektor-DB-Lösung implementieren
@@ -111,10 +114,12 @@ Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweis
 - [ ] Memory-Management prüfen
 
 ### Phase 9: Documentation
-- [ ] API-Dokumentation
+- [x] Fehlerbehandlungs-Dokumentation (ERROR_HANDLING.md)
+- [x] Sicherheits-Richtlinien (SECURITY.md)
+- [x] API-Dokumentation (in Quellcode via JSDoc)
 - [ ] Benutzer-Handbuch
-- [ ] Developer-Guide
-- [ ] Setup-Anleitung erweitern
+- [ ] Developer-Guide erweitern
+- [x] Setup-Anleitung erweitern
 
 ### Phase 10: Deployment
 - [ ] Build-Prozess für Windows
@@ -133,10 +138,16 @@ Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweis
 - [ ] Pre-commit hooks (husky)
 
 ### Sicherheit
-- [ ] Input-Validierung
-- [ ] XSS-Schutz
-- [ ] Sichere Datenspeicherung
-- [ ] Permissions-Management
+- [x] Input-Validierung
+- [x] XSS-Schutz
+- [x] Sichere Datenspeicherung (SQLite mit parametrisierten Queries)
+- [x] SQL-Injection-Prävention
+- [x] Custom Error Classes
+- [x] Strukturiertes Error-Logging
+- [x] DoS-Prävention durch Size Limits
+- [ ] Permissions-Management (in Tauri konfigurieren)
+- [ ] Encryption at rest (falls benötigt)
+- [ ] Rate Limiting (falls benötigt)
 
 ### Performance
 - [ ] Code-Splitting implementieren
