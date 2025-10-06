@@ -49,9 +49,16 @@ Keine zusätzlichen Abhängigkeiten erforderlich.
 3. **Syncfusion Lizenz konfigurieren** (optional)
    
    Erstellen Sie eine `.env` Datei im Projekt-Root:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Tragen Sie dann Ihren Lizenzschlüssel ein:
    ```
    VITE_SYNCFUSION_LICENSE_KEY=your-license-key-here
    ```
+   
+   **Hinweis:** Die Lizenz wird automatisch beim App-Start in `src/main.tsx` registriert.
 
 ## Entwicklung
 

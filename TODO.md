@@ -15,8 +15,8 @@ Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweis
 
 ### Syncfusion Lizenzierung
 - [ ] Syncfusion Lizenzschlüssel erhalten/konfigurieren
-- [ ] Lizenzschlüssel in Umgebungsvariablen oder Config-Datei speichern
-- [ ] Lizenz-Registrierung beim App-Start implementieren
+- [x] Lizenzschlüssel in Umgebungsvariablen oder Config-Datei speichern
+- [x] Lizenz-Registrierung beim App-Start implementieren
 
 ### Vektor-Datenbank
 - [ ] Welche Vektor-DB-Lösung soll verwendet werden?
@@ -59,7 +59,7 @@ Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweis
 
 ### Phase 2: UI-Framework
 - [ ] Syncfusion Components integrieren
-- [ ] Lizenz-Key konfigurieren
+- [x] Lizenz-Key konfigurieren
 - [ ] Theme-System aufbauen (Light/Dark Mode)
 - [ ] Basis-Layout-Komponenten erstellen
   - [ ] Header/Navigation
