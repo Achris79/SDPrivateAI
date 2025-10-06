@@ -275,8 +275,8 @@ await createEmbedding(
 ## 🔗 Weiterführende Links
 
 - [VECTOR_SEARCH.md](./VECTOR_SEARCH.md) - Vollständige Dokumentation
-- [src/services/database/README.md](./src/services/database/README.md) - Database Service Docs
-- [src/services/database/examples.ts](./src/services/database/examples.ts) - Code-Beispiele
+- [database.md](./database.md) - Database Service Docs
+- [src/services/database/examples.ts](../src/services/database/examples.ts) - Code-Beispiele
 - [nomic-embed-text Model](https://huggingface.co/nomic-ai/nomic-embed-text-v1)
 
 ## ✨ Zusammenfassung

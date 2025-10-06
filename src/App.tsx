@@ -52,7 +52,7 @@ function App() {
             <li>Add vector search functionality</li>
             <li>Integrate AI models</li>
           </ul>
-          <p>See TODO.md for complete task list.</p>
+          <p>See docs/TODO.md for complete task list.</p>
         </div>
       </div>
     </MainLayout>

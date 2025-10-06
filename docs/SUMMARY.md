@@ -230,7 +230,7 @@ sudo apt install libwebkit2gtk-4.1-dev \
 - [INSTALLATION.md](./INSTALLATION.md) - Setup und Installation
 - [DOCUMENTATION.md](./DOCUMENTATION.md) - Projekt-Dokumentation
 - [TODO.md](./TODO.md) - Aufgaben und offene Fragen
-- [readme.md](./readme.md) - Projekt-Übersicht
+- [readme.md](../readme.md) - Projekt-Übersicht
 
 ## 🎨 Best Practices implementiert
 
