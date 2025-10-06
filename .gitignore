@@ -36,3 +36,6 @@ src-tauri/target
 
 # OS files
 Thumbs.db
+
+# Rust
+Cargo.lock

@@ -1,5 +1,16 @@
 # TODO Liste - SDPrivateAI
 
+## ⚠️ Wichtige Hinweise
+
+### System-Abhängigkeiten (Linux)
+Auf Linux-Systemen müssen die folgenden System-Pakete installiert sein, damit Tauri kompiliert werden kann:
+```bash
+sudo apt update
+sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+```
+
+Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweisungen.
+
 ## Offene Fragen / Klärungsbedarf
 
 ### Syncfusion Lizenzierung
