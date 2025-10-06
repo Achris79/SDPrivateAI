@@ -45,6 +45,8 @@ Die vollständige Dokumentation findest du in folgenden Dateien:
 - **[QUICKSTART.md](./QUICKSTART.md)** - 🚀 Schnellstart-Guide (5 Minuten)
 - **[INSTALLATION.md](./INSTALLATION.md)** - 🔧 Detaillierte Installation & Setup
 - **[DOCUMENTATION.md](./DOCUMENTATION.md)** - 📖 Vollständige Projekt-Dokumentation
+- **[ERROR_HANDLING.md](./ERROR_HANDLING.md)** - 🛡️ Fehlerbehandlung & Defensive Programming
+- **[SECURITY.md](./SECURITY.md)** - 🔒 Sicherheitsrichtlinien & Best Practices
 - **[TODO.md](./TODO.md)** - 📝 Aufgabenliste & offene Fragen
 - **[SUMMARY.md](./SUMMARY.md)** - ✅ Projekt-Setup Übersicht
 
@@ -92,13 +94,23 @@ SDPrivateAI/
 - Typsichere TypeScript-API
 - Layout-Komponenten
 
+✅ **Sicherheit & Fehlerbehandlung**
+- Custom Error Classes für typsichere Fehlerbehandlung
+- Defensive Input-Validierung auf allen APIs
+- SQL-Injection-Prävention durch parametrisierte Queries
+- XSS-Schutz durch Input-Sanitisierung
+- DoS-Prävention durch Größenlimits
+- Strukturiertes Error-Logging mit Context
+
 ## 💾 Datenbank-Features
 
 Die App bietet eine **lokale, schnelle SQLite-Datenbankanbindung** mit:
 
+- ✅ **Sicher** - SQL-Injection-Prävention, Input-Validierung
+- ✅ **Robust** - Umfassende Fehlerbehandlung und Logging
 - ✅ **Minimal Dependencies** - Nur Tauri SQL Plugin
 - ✅ **Einfach zu implementieren** - Intuitive TypeScript-API
-- ✅ **Wartbar** - Saubere Code-Struktur
+- ✅ **Wartbar** - Saubere Code-Struktur mit Custom Error Classes
 - ✅ **Performant** - Automatische Indizierung
 - ✅ **Offline-fähig** - 100% lokal, keine Cloud
 
@@ -107,7 +119,13 @@ Die App bietet eine **lokale, schnelle SQLite-Datenbankanbindung** mit:
 - Embeddings (Vektoren für semantische Suche)
 - Metadaten (flexible JSON-Speicherung)
 
-Siehe [Database README](./src/services/database/README.md) für Details und Beispiele.
+**Sicherheitsfeatures:**
+- Parametrisierte Queries gegen SQL-Injection
+- Input-Sanitisierung gegen XSS
+- Größenlimits gegen DoS
+- Defensive Validierung aller Eingaben
+
+Siehe [Database README](./src/services/database/README.md) und [ERROR_HANDLING.md](./ERROR_HANDLING.md) für Details.
 
 📋 **Nächste Schritte**
 - Syncfusion-Integration

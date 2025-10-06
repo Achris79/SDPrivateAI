@@ -86,6 +86,8 @@ SDPrivateAI/
 │
 ├── TODO.md                           # Aufgabenliste und offene Fragen
 ├── INSTALLATION.md                   # Installations-Anleitung
+├── ERROR_HANDLING.md                 # Fehlerbehandlung & Defensive Programming
+├── SECURITY.md                       # Sicherheitsrichtlinien & Best Practices
 └── readme.md                         # Projekt-Readme
 
 ```
@@ -108,11 +110,19 @@ SDPrivateAI/
 - Zentrale Theme-Definitionen
 
 ### 4. Datenbank-Setup
-- SQLite-Integration vorbereitet
+- SQLite-Integration mit umfassender Fehlerbehandlung
 - Basis-Schema für Dokumente und Embeddings
-- CRUD-Operationen (vorbereitet)
+- CRUD-Operationen mit Input-Validierung
+- SQL-Injection-Schutz durch parametrisierte Queries
+- XSS-Prävention durch Input-Sanitisierung
 
-### 5. TypeScript-Typsystem
+### 5. Fehlerbehandlungssystem
+- Custom Error Classes (DatabaseError, ValidationError, AIError, etc.)
+- Defensive Input-Validierung auf allen Public APIs
+- Strukturiertes Error-Logging mit Context
+- Security-fokussierte Validatoren
+
+### 6. TypeScript-Typsystem
 - Zentrale Type-Definitionen
 - Type-Safety für Dokumente, Embeddings, Settings
 
@@ -125,9 +135,24 @@ Haupt-App-Komponente, die das Layout initialisiert und Theme/i18n verwaltet.
 
 #### `src/services/database/index.ts`
 Datenbank-Service mit:
-- `initDatabase()` - DB-Initialisierung
+- `initDatabase()` - DB-Initialisierung mit Error Handling
 - `getDatabase()` - DB-Zugriff
 - Tabellen-Erstellung für Dokumente und Embeddings
+- CRUD-Operationen mit umfassender Validierung
+- SQL-Injection-Schutz
+- Input-Sanitisierung
+
+#### `src/errors/index.ts`
+Fehlerbehandlungssystem:
+- Custom Error Classes (AppError, DatabaseError, ValidationError, etc.)
+- ErrorLogger für strukturiertes Logging
+- Context-basierte Fehlerinformationen
+
+#### `src/utils/validation.ts`
+Validierungs-Utilities:
+- Input-Validierung (Strings, Numbers, Arrays)
+- Security-Validatoren (SQL-Injection, XSS-Prevention)
+- Safe Parsing Utilities
 
 #### `src/services/i18n/config.ts`
 i18next-Konfiguration mit DE/EN Übersetzungen.
@@ -200,6 +225,15 @@ Siehe [TODO.md](./TODO.md) für die vollständige Liste der geplanten Features u
 4. Testing & Optimierung
 
 ## Best Practices
+
+### Sicherheit & Fehlerbehandlung
+- **Defensive Programmierung**: Alle Eingaben validieren
+- **Input Sanitization**: XSS und SQL-Injection Prevention
+- **Type Safety**: TypeScript strict mode aktiviert
+- **Custom Error Classes**: Strukturierte Fehlerbehandlung
+- **Logging**: Umfassendes Error-Logging mit Context
+
+Siehe [ERROR_HANDLING.md](./ERROR_HANDLING.md) und [SECURITY.md](./SECURITY.md) für Details.
 
 ### Code-Organisation
 - Komponenten nach Features gruppieren

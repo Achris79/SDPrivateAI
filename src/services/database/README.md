@@ -129,6 +129,13 @@ await deleteEmbeddingsByDocumentId('doc-123');
 
 ## Features
 
+### ✅ Sicher & Robust
+- Input-Validierung auf allen Operationen
+- SQL-Injection-Prävention durch parametrisierte Queries
+- XSS-Schutz durch Input-Sanitisierung
+- Umfassende Fehlerbehandlung mit Custom Error Classes
+- Strukturiertes Error-Logging
+
 ### ✅ Lokal & Offline
 - Keine Cloud-Abhängigkeiten
 - SQLite-Datei lokal gespeichert
@@ -183,15 +190,28 @@ CREATE TABLE embeddings (
 
 ## Fehlerbehandlung
 
-Alle Funktionen werfen einen Fehler, wenn die Datenbank nicht initialisiert wurde:
+Alle Funktionen implementieren umfassende Fehlerbehandlung:
 
 ```typescript
+import { DatabaseError, ValidationError } from '../../errors';
+
 try {
   const doc = await getDocument('doc-123');
 } catch (error) {
-  console.error('Database error:', error);
+  if (error instanceof ValidationError) {
+    console.error('Invalid input:', error.field);
+  } else if (error instanceof DatabaseError) {
+    console.error('Database error:', error.message, error.details);
+  }
 }
 ```
+
+**Error Types:**
+- `DatabaseError` - Datenbankfehler (Connection, Query, etc.)
+- `ValidationError` - Eingabevalidierungsfehler
+- Alle Fehler enthalten detaillierte Context-Informationen
+
+Siehe [ERROR_HANDLING.md](../../ERROR_HANDLING.md) für vollständige Dokumentation.
 
 ## Migrations & Erweiterungen
 
