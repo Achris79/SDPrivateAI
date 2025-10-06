@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import MainLayout from './components/layout/MainLayout';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { useTheme } from './hooks/useTheme';
-import { initDatabase } from './services/database';
+import { initializeServices } from './services/container';
 import { logger } from './errors';
 import './App.css';
 
@@ -12,15 +12,15 @@ function App() {
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
-    // Initialize database on app start with proper error handling
+    // Initialize all services on app start with proper error handling
     const initApp = async () => {
       try {
-        await initDatabase();
+        await initializeServices();
         logger.info('Application initialized successfully');
       } catch (error) {
         logger.log(
           error instanceof Error ? error : new Error('Unknown error during initialization'),
-          { component: 'App', action: 'initDatabase' }
+          { component: 'App', action: 'initializeServices' }
         );
       }
     };
