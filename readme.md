@@ -45,9 +45,12 @@ Die vollständige Dokumentation findest du in folgenden Dateien:
 - **[QUICKSTART.md](./docs/QUICKSTART.md)** - 🚀 Schnellstart-Guide (5 Minuten)
 - **[INSTALLATION.md](./docs/INSTALLATION.md)** - 🔧 Detaillierte Installation & Setup
 - **[DOCUMENTATION.md](./docs/DOCUMENTATION.md)** - 📖 Vollständige Projekt-Dokumentation
+- **[ARCHITECTURE_OPTIMIZATION.md](./docs/ARCHITECTURE_OPTIMIZATION.md)** - 🏗️ Architektur-Optimierungen & Best Practices
+- **[ARCHITECTURE_DIAGRAM.md](./docs/ARCHITECTURE_DIAGRAM.md)** - 📊 Visuelle Architektur-Diagramme
 - **[VECTOR_SEARCH.md](./docs/VECTOR_SEARCH.md)** - 🔍 Vector Search & Semantische Suche
 - **[ERROR_HANDLING.md](./docs/ERROR_HANDLING.md)** - 🛡️ Fehlerbehandlung & Defensive Programming
 - **[SECURITY.md](./docs/SECURITY.md)** - 🔒 Sicherheitsrichtlinien & Best Practices
+- **[DATABASE_MIGRATIONS.md](./docs/DATABASE_MIGRATIONS.md)** - 🗄️ Datenbank-Migration-System
 - **[TODO.md](./docs/TODO.md)** - 📝 Aufgabenliste & offene Fragen
 - **[SUMMARY.md](./docs/SUMMARY.md)** - ✅ Projekt-Setup Übersicht
 
@@ -103,7 +106,16 @@ SDPrivateAI/
 - DoS-Prävention durch Größenlimits
 - Strukturiertes Error-Logging mit Context
 
-✅ **Vector Search & Semantische Suche** 🆕
+✅ **Architektur-Optimierungen** 🆕
+- React Error Boundaries für Komponenten-Isolation
+- Transaction-Support für atomare Operationen
+- In-Memory-Caching mit TTL
+- Performance-Monitoring mit Metriken
+- Retry-Logic mit Exponential Backoff
+- Circuit Breaker Pattern
+- Enhanced Tauri Security (CSP)
+
+✅ **Vector Search & Semantische Suche**
 - nomic-embed-text Modell konfiguriert (768 Dimensionen)
 - SQLite-basierte Vector-Datenbank
 - Cosine Similarity für Vector Search
