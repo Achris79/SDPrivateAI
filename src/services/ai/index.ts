@@ -1,6 +1,8 @@
 /**
  * AI Service for embedding generation and model management
  * 
+ * Uses nomic-embed-text model for local embedding generation (768 dimensions)
+ * 
  * Security features:
  * - Input validation on all operations
  * - Defensive error handling
@@ -8,8 +10,8 @@
  * 
  * TODO: Implement actual AI/ML functionality
  * Options to consider:
- * - transformers.js for in-browser ML
- * - ONNX Runtime Web
+ * - transformers.js for in-browser ML with nomic-embed
+ * - ONNX Runtime Web with nomic-embed-text model
  * - Integration with local llama.cpp via Tauri commands
  */
 
@@ -31,11 +33,12 @@ export async function generateEmbedding(text: string): Promise<EmbeddingResult> 
   try {
     validateNotEmpty(text, 'text');
     
-    // TODO: Implement actual embedding generation
+    // TODO: Implement actual embedding generation with nomic-embed-text
     logger.warn('generateEmbedding: Using placeholder implementation');
     
     // Placeholder: Generate random vector
-    const dimensionality = 384; // typical for all-MiniLM-L6-v2
+    // nomic-embed-text produces 768-dimensional embeddings
+    const dimensionality = 768;
     const vector = Array.from({ length: dimensionality }, () => Math.random());
     
     return {

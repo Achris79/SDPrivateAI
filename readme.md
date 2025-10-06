@@ -15,8 +15,8 @@ Tauri	Native Cross-Plattform-App mit sehr kleiner Binary-Größe
 React + TypeScript	Modernes, typsicheres UI-Frontend
 Syncfusion React Components	Professionelle GUI-Komponenten (DataGrid, Charts, Dialogs, Inputs etc.)
 SQLite	Lokale Datenbank für strukturierte Daten
-Vektor-Datenbank (lokal)	Speicherung von Embeddings zur semantischen Suche
-OpenAI-kompatible Embedding-Modelle (lokal)	Optionale KI-Verarbeitung über z. B. llama.cpp, nomic-embed, transformers.js
+Vektor-Suche (SQLite + Cosine Similarity)	Semantische Suche mit In-Memory Vector Similarity
+nomic-embed-text (768D)	Lokales Embedding-Modell für semantische Vektorisierung
 
 ## 🖼️ Features (geplant)
 

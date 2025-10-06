@@ -15,12 +15,16 @@ SDPrivateAI ist eine offline-fähige, plattformübergreifende KI-Anwendung für 
 
 ### Backend
 - **Tauri** - Native Desktop-App-Framework in Rust
-- **SQLite** - Lokale Datenbank für strukturierte Daten
+- **SQLite** - Lokale Datenbank für strukturierte Daten und Vektorspeicherung
 - **tauri-plugin-sql** - SQLite-Integration für Tauri
+- **Vector Search** - Cosine Similarity für semantische Suche
+
+### AI/ML
+- **nomic-embed-text** - Embedding-Modell (768 Dimensionen)
+- **Cosine Similarity** - In-Memory Vector Search
 
 ### Geplante Erweiterungen
-- Vektor-Datenbank für semantische Suche
-- AI/ML-Modelle für Embeddings (lokal)
+- AI/ML-Modell-Integration (transformers.js, ONNX Runtime Web)
 - Android-Unterstützung
 
 ## Projektstruktur
@@ -88,6 +92,7 @@ SDPrivateAI/
 ├── INSTALLATION.md                   # Installations-Anleitung
 ├── ERROR_HANDLING.md                 # Fehlerbehandlung & Defensive Programming
 ├── SECURITY.md                       # Sicherheitsrichtlinien & Best Practices
+├── VECTOR_SEARCH.md                  # Vector Search & Semantische Suche
 └── readme.md                         # Projekt-Readme
 
 ```

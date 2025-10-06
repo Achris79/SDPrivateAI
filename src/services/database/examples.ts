@@ -1,6 +1,6 @@
 /**
  * Example usage of the database service
- * Demonstrates CRUD operations for documents and embeddings
+ * Demonstrates CRUD operations for documents, embeddings, and vector search
  */
 
 import {
@@ -15,6 +15,8 @@ import {
   getEmbedding,
   getEmbeddingsByDocumentId,
   deleteEmbedding,
+  searchSimilarEmbeddings,
+  semanticSearch,
   closeDatabase,
 } from './index';
 
@@ -145,9 +147,71 @@ async function paginationExample() {
   await closeDatabase();
 }
 
+/**
+ * Example: Vector search and semantic similarity
+ */
+async function vectorSearchExample() {
+  await initDatabase();
+
+  // 1. Create some documents with embeddings
+  const docs = [
+    {
+      id: 'doc-ai-1',
+      title: 'Introduction to AI',
+      content: 'Artificial Intelligence is the simulation of human intelligence by machines.',
+    },
+    {
+      id: 'doc-ml-1',
+      title: 'Machine Learning Basics',
+      content: 'Machine learning is a subset of AI that enables computers to learn from data.',
+    },
+    {
+      id: 'doc-dl-1',
+      title: 'Deep Learning',
+      content: 'Deep learning uses neural networks with multiple layers to analyze data.',
+    },
+  ];
+
+  // Create documents and generate embeddings
+  const { generateEmbedding } = await import('../ai');
+  
+  for (const docData of docs) {
+    await createDocument(docData.id, docData.title, docData.content);
+    
+    // Generate embedding for the content
+    const { vector } = await generateEmbedding(docData.content);
+    await createEmbedding(
+      `emb-${docData.id}`,
+      docData.id,
+      vector,
+      { model: 'nomic-embed-text', dimension: 768 }
+    );
+  }
+
+  // 2. Search for similar embeddings using a query vector
+  const { vector: queryVector } = await generateEmbedding('What is artificial intelligence?');
+  const similarEmbeddings = await searchSimilarEmbeddings(queryVector, 3, 0.5);
+  
+  console.log('Similar embeddings:');
+  similarEmbeddings.forEach((emb) => {
+    console.log(`  - ${emb.id}: similarity = ${emb.similarity.toFixed(3)}`);
+  });
+
+  // 3. Semantic search for documents
+  const results = await semanticSearch('neural networks and learning', 5, 0.5);
+  
+  console.log('\nSemantic search results:');
+  results.forEach((doc) => {
+    console.log(`  - ${doc.title} (${doc.similarity.toFixed(3)})`);
+  });
+
+  await closeDatabase();
+}
+
 // Uncomment to run examples:
 // documentExample().catch(console.error);
 // embeddingExample().catch(console.error);
 // paginationExample().catch(console.error);
+// vectorSearchExample().catch(console.error);
 
-export { documentExample, embeddingExample, paginationExample };
+export { documentExample, embeddingExample, paginationExample, vectorSearchExample };

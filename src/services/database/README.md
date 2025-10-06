@@ -127,6 +127,51 @@ await deleteEmbedding('emb-123');
 await deleteEmbeddingsByDocumentId('doc-123');
 ```
 
+### Vector Search (Semantische Suche)
+
+#### Ähnliche Embeddings suchen
+
+```typescript
+import { searchSimilarEmbeddings } from './services/database';
+
+// Suche nach ähnlichen Vektoren
+const results = await searchSimilarEmbeddings(
+  [0.1, 0.2, 0.3, ...], // Query-Vektor (768 Dimensionen für nomic-embed)
+  10,                    // Limit: Max. 10 Ergebnisse
+  0.7                    // Min. Ähnlichkeit: 0.7 (0-1 Skala)
+);
+
+// Ergebnisse enthalten Similarity Score
+results.forEach(result => {
+  console.log(`Embedding ${result.id}: ${result.similarity}`);
+});
+```
+
+#### Semantische Dokumentensuche
+
+```typescript
+import { semanticSearch } from './services/database';
+
+// Suche nach semantisch ähnlichen Dokumenten
+const docs = await semanticSearch(
+  'Wie funktioniert künstliche Intelligenz?',  // Suchtext
+  5,                                             // Max. 5 Ergebnisse
+  0.6                                            // Min. Ähnlichkeit: 0.6
+);
+
+// Ergebnisse sind nach Ähnlichkeit sortiert
+docs.forEach(doc => {
+  console.log(`${doc.title} (${doc.similarity.toFixed(2)})`);
+});
+```
+
+**Hinweise zur Vector Search:**
+- Verwendet Cosine Similarity für Vektorvergleiche
+- Unterstützt nomic-embed-text Modell (768 Dimensionen)
+- Automatische Generierung von Query-Embeddings
+- Effiziente In-Memory-Verarbeitung
+- Ergebnisse nach Ähnlichkeit sortiert (höchste zuerst)
+
 ## Features
 
 ### ✅ Sicher & Robust

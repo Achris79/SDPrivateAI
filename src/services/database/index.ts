@@ -16,6 +16,7 @@ import {
   validateStringLength,
   validateArray,
   validateNumber,
+  validateNotEmpty,
   safeJsonParse,
   sanitizeString,
 } from '../../utils/validation';
@@ -742,6 +743,192 @@ export async function listEmbeddings(): Promise<VectorEmbedding[]> {
       'Failed to list embeddings',
       { 
         originalError: error instanceof Error ? error.message : 'Unknown error'
+      }
+    );
+  }
+}
+
+// ==================== Vector Search Operations ====================
+
+/**
+ * Search for similar embeddings using cosine similarity
+ * @param queryVector - The query vector to search for
+ * @param limit - Maximum number of results to return (default: 10)
+ * @param minSimilarity - Minimum similarity threshold (0-1, default: 0.0)
+ * @returns Array of embeddings with similarity scores, sorted by similarity (highest first)
+ * @throws {DatabaseError} If database operation fails
+ * @throws {ValidationError} If input validation fails
+ */
+export async function searchSimilarEmbeddings(
+  queryVector: number[],
+  limit: number = 10,
+  minSimilarity: number = 0.0
+): Promise<Array<VectorEmbedding & { similarity: number }>> {
+  if (!db) {
+    throw new DatabaseError('Database not initialized');
+  }
+
+  try {
+    validateArray(queryVector, 'query vector', 1);
+    validateNumber(limit, 'limit', 1, 1000);
+    validateNumber(minSimilarity, 'min similarity', 0, 1);
+
+    // Get all embeddings
+    const allEmbeddings = await listEmbeddings();
+
+    // Calculate similarity for each embedding
+    const withSimilarity = allEmbeddings.map((emb) => {
+      // Calculate cosine similarity
+      const similarity = calculateCosineSimilarity(queryVector, emb.vector);
+      return {
+        ...emb,
+        similarity,
+      };
+    });
+
+    // Filter by minimum similarity and sort by similarity (descending)
+    const filtered = withSimilarity
+      .filter((emb) => emb.similarity >= minSimilarity)
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, limit);
+
+    logger.info('Vector similarity search completed', {
+      totalEmbeddings: allEmbeddings.length,
+      resultsCount: filtered.length,
+      limit,
+      minSimilarity,
+    });
+
+    return filtered;
+  } catch (error) {
+    if (error instanceof DatabaseError || error instanceof Error && error.name === 'ValidationError') {
+      throw error;
+    }
+    throw new DatabaseError(
+      'Failed to search similar embeddings',
+      {
+        queryVectorLength: queryVector.length,
+        limit,
+        minSimilarity,
+        originalError: error instanceof Error ? error.message : 'Unknown error',
+      }
+    );
+  }
+}
+
+/**
+ * Calculate cosine similarity between two vectors
+ * @param a - First vector
+ * @param b - Second vector
+ * @returns Similarity score between -1 and 1 (typically 0-1 for embeddings)
+ */
+function calculateCosineSimilarity(a: number[], b: number[]): number {
+  if (a.length !== b.length) {
+    return 0; // Incompatible vectors
+  }
+
+  let dotProduct = 0;
+  let normA = 0;
+  let normB = 0;
+
+  for (let i = 0; i < a.length; i++) {
+    if (!Number.isFinite(a[i]) || !Number.isFinite(b[i])) {
+      return 0; // Invalid values
+    }
+    dotProduct += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+
+  const denominator = Math.sqrt(normA) * Math.sqrt(normB);
+  if (denominator === 0) {
+    return 0; // Zero vectors
+  }
+
+  return dotProduct / denominator;
+}
+
+/**
+ * Search for documents by semantic similarity
+ * Generates embedding for query text and finds similar documents
+ * @param queryText - The text to search for
+ * @param limit - Maximum number of results to return (default: 10)
+ * @param minSimilarity - Minimum similarity threshold (0-1, default: 0.5)
+ * @returns Array of documents with similarity scores
+ * @throws {DatabaseError} If database operation fails
+ * @throws {ValidationError} If input validation fails
+ */
+export async function semanticSearch(
+  queryText: string,
+  limit: number = 10,
+  minSimilarity: number = 0.5
+): Promise<Array<Document & { similarity: number }>> {
+  if (!db) {
+    throw new DatabaseError('Database not initialized');
+  }
+
+  try {
+    validateNotEmpty(queryText, 'query text');
+    validateNumber(limit, 'limit', 1, 1000);
+    validateNumber(minSimilarity, 'min similarity', 0, 1);
+
+    // Import AI service to generate embedding
+    const { generateEmbedding } = await import('../ai');
+    const { vector: queryVector } = await generateEmbedding(queryText);
+
+    // Search for similar embeddings
+    const similarEmbeddings = await searchSimilarEmbeddings(
+      queryVector,
+      limit * 2, // Get more results to account for multiple embeddings per document
+      minSimilarity
+    );
+
+    // Get unique documents and calculate average similarity if multiple embeddings exist
+    const documentMap = new Map<string, { document: Document; similarities: number[] }>();
+
+    for (const emb of similarEmbeddings) {
+      const doc = await getDocument(emb.documentId);
+      if (doc) {
+        const existing = documentMap.get(doc.id);
+        if (existing) {
+          existing.similarities.push(emb.similarity);
+        } else {
+          documentMap.set(doc.id, {
+            document: doc,
+            similarities: [emb.similarity],
+          });
+        }
+      }
+    }
+
+    // Calculate average similarity and create result
+    const results = Array.from(documentMap.values())
+      .map(({ document, similarities }) => ({
+        ...document,
+        similarity: similarities.reduce((a, b) => a + b, 0) / similarities.length,
+      }))
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, limit);
+
+    logger.info('Semantic search completed', {
+      queryLength: queryText.length,
+      resultsCount: results.length,
+      limit,
+      minSimilarity,
+    });
+
+    return results;
+  } catch (error) {
+    if (error instanceof DatabaseError || error instanceof Error && error.name === 'ValidationError') {
+      throw error;
+    }
+    throw new DatabaseError(
+      'Failed to perform semantic search',
+      {
+        queryLength: queryText.length,
+        limit,
+        minSimilarity,
+        originalError: error instanceof Error ? error.message : 'Unknown error',
       }
     );
   }

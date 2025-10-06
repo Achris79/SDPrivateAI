@@ -19,12 +19,12 @@ Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweis
 - [x] Lizenz-Registrierung beim App-Start implementieren
 
 ### Vektor-Datenbank
-- [ ] Welche Vektor-DB-Lösung soll verwendet werden?
-  - Option 1: SQLite mit sqlite-vss Extension
+- [x] Welche Vektor-DB-Lösung soll verwendet werden?
+  - ✅ Option 1: SQLite mit sqlite-vss Extension (ENTSCHIEDEN)
   - Option 2: Separate Vektor-DB wie Qdrant (embedded mode)
   - Option 3: Custom-Implementierung mit HNSW in SQLite
-- [ ] Embedding-Modell-Auswahl definieren
-  - nomic-embed-text?
+- [x] Embedding-Modell-Auswahl definieren
+  - ✅ nomic-embed-text (ENTSCHIEDEN - 768 Dimensionen)
   - all-MiniLM-L6-v2?
   - Eigenes Modell?
 
@@ -88,14 +88,14 @@ Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweis
 - [x] Error-Handling implementiert
 
 ### Phase 5: Vektor-Suche
-- [ ] Vektor-DB-Lösung implementieren
-- [ ] Embedding-Funktionen integrieren
+- [ ] Vektor-DB-Lösung implementieren (SQLite mit sqlite-vss)
+- [ ] Embedding-Funktionen integrieren (nomic-embed-text)
 - [ ] Semantic Search API
 - [ ] Search UI-Komponente
 
 ### Phase 6: AI-Integration
-- [ ] Embedding-Modell lokal laden
-- [ ] Embedding-Service implementieren
+- [ ] Embedding-Modell lokal laden (nomic-embed-text)
+- [ ] Embedding-Service implementieren (768 Dimensionen)
 - [ ] Optional: Text-Generation-Modell integrieren
 - [ ] Model-Management UI
 
