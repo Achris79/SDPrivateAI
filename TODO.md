@@ -38,9 +38,10 @@ Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweis
 - [ ] Modell-Update-Mechanismus definieren
 
 ### Datenbank-Schema
-- [ ] SQLite-Schema für Dokumente definieren
-- [ ] Schema für Metadaten festlegen
-- [ ] Migrations-Strategie definieren
+- [x] SQLite-Schema für Dokumente definieren
+- [x] Schema für Metadaten festlegen
+- [x] Performance-Indizes implementiert
+- [ ] Migrations-Strategie erweitern (für zukünftige Schema-Änderungen)
 - [ ] Backup-Strategie festlegen
 
 ### Android-Support
@@ -74,13 +75,14 @@ Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweis
 - [ ] Alle UI-Texte internationalisierbar machen
 
 ### Phase 4: Datenbank-Integration
-- [ ] Tauri SQL Plugin konfigurieren
-- [ ] SQLite-Datei-Struktur definieren
-- [ ] Migrations-System einrichten
-- [ ] Data Access Layer (DAL) implementieren
-  - [ ] CRUD für Dokumente
-  - [ ] CRUD für Metadaten
-  - [ ] Vektor-Operationen
+- [x] Tauri SQL Plugin konfigurieren
+- [x] SQLite-Datei-Struktur definieren
+- [x] Migrations-System einrichten (Basis-Implementierung)
+- [x] Data Access Layer (DAL) implementieren
+  - [x] CRUD für Dokumente
+  - [x] CRUD für Metadaten
+  - [x] Vektor-Operationen (Basis-Funktionen)
+  - [x] Performance-Indizes erstellt
 
 ### Phase 5: Vektor-Suche
 - [ ] Vektor-DB-Lösung implementieren
