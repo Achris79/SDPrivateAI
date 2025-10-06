@@ -45,6 +45,7 @@ Die vollständige Dokumentation findest du in folgenden Dateien:
 - **[QUICKSTART.md](./QUICKSTART.md)** - 🚀 Schnellstart-Guide (5 Minuten)
 - **[INSTALLATION.md](./INSTALLATION.md)** - 🔧 Detaillierte Installation & Setup
 - **[DOCUMENTATION.md](./DOCUMENTATION.md)** - 📖 Vollständige Projekt-Dokumentation
+- **[VECTOR_SEARCH.md](./VECTOR_SEARCH.md)** - 🔍 Vector Search & Semantische Suche
 - **[ERROR_HANDLING.md](./ERROR_HANDLING.md)** - 🛡️ Fehlerbehandlung & Defensive Programming
 - **[SECURITY.md](./SECURITY.md)** - 🔒 Sicherheitsrichtlinien & Best Practices
 - **[TODO.md](./TODO.md)** - 📝 Aufgabenliste & offene Fragen
@@ -101,6 +102,14 @@ SDPrivateAI/
 - XSS-Schutz durch Input-Sanitisierung
 - DoS-Prävention durch Größenlimits
 - Strukturiertes Error-Logging mit Context
+
+✅ **Vector Search & Semantische Suche** 🆕
+- nomic-embed-text Modell konfiguriert (768 Dimensionen)
+- SQLite-basierte Vector-Datenbank
+- Cosine Similarity für Vector Search
+- `searchSimilarEmbeddings()` API
+- `semanticSearch()` für semantische Dokumentensuche
+- Vollständige Dokumentation in [VECTOR_SEARCH.md](./VECTOR_SEARCH.md)
 
 ## 💾 Datenbank-Features
 
