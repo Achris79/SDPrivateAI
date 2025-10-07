@@ -3,25 +3,102 @@
  * 
  * Uses nomic-embed-text model for local embedding generation (768 dimensions)
  * 
+ * Loading Engine Architecture:
+ * - Primary: ONNX Runtime Web (optimized performance)
+ * - Fallback: WASM via transformers.js (compatibility)
+ * 
  * Security features:
  * - Input validation on all operations
  * - Defensive error handling
  * - Safe vector operations
- * 
- * TODO: Implement actual AI/ML functionality
- * Options to consider:
- * - transformers.js for in-browser ML with nomic-embed
- * - ONNX Runtime Web with nomic-embed-text model
- * - Integration with local llama.cpp via Tauri commands
  */
 
 import { AIError, logger } from '../../errors';
 import { validateNotEmpty, validateArray } from '../../utils/validation';
+import { LoadingEngineManager, EngineStrategy, LoadingEngineType } from './loaders';
+
+// Re-export types for convenience
+export { LoadingEngineType, EngineStrategy } from './loaders';
 
 export interface EmbeddingResult {
   vector: number[];
   dimensionality: number;
 }
+
+/**
+ * AI Service Configuration
+ */
+export interface AIServiceConfig {
+  modelName?: string;
+  modelPath?: string;
+  dimension?: number;
+  strategy?: EngineStrategy;
+}
+
+/**
+ * Default configuration for nomic-embed-text
+ */
+const DEFAULT_CONFIG: AIServiceConfig = {
+  modelName: 'nomic-ai/nomic-embed-text-v1.5',
+  dimension: 768,
+  strategy: EngineStrategy.AUTO,
+};
+
+let engineManager: LoadingEngineManager | null = null;
+let isInitialized = false;
+
+/**
+ * Initialize the AI service with loading engine
+ * @param config - Optional configuration
+ */
+export async function initializeAI(config: AIServiceConfig = {}): Promise<void> {
+  try {
+    const finalConfig = { ...DEFAULT_CONFIG, ...config };
+    
+    logger.info('AI Service: Initializing', {
+      modelName: finalConfig.modelName,
+      strategy: finalConfig.strategy,
+    });
+
+    engineManager = LoadingEngineManager.getInstance();
+    await engineManager.initialize({
+      modelName: finalConfig.modelName!,
+      modelPath: finalConfig.modelPath,
+      dimension: finalConfig.dimension!,
+      strategy: finalConfig.strategy,
+    });
+
+    isInitialized = true;
+    
+    logger.info('AI Service: Initialized successfully', {
+      engine: engineManager.getCurrentEngine(),
+    });
+  } catch (error) {
+    isInitialized = false;
+    throw new AIError('Failed to initialize AI service', {
+      originalError: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * Get current loading engine type
+ */
+export function getCurrentEngine(): LoadingEngineType | null {
+  return engineManager?.getCurrentEngine() || null;
+}
+
+/**
+ * Dispose AI service resources
+ */
+export async function disposeAI(): Promise<void> {
+  if (engineManager) {
+    await engineManager.dispose();
+    engineManager = null;
+    isInitialized = false;
+  }
+}
+
 
 /**
  * Generate embeddings for text
@@ -33,17 +110,22 @@ export async function generateEmbedding(text: string): Promise<EmbeddingResult> 
   try {
     validateNotEmpty(text, 'text');
     
-    // TODO: Implement actual embedding generation with nomic-embed-text
-    logger.warn('generateEmbedding: Using placeholder implementation');
+    // Auto-initialize if not already initialized
+    if (!isInitialized || !engineManager) {
+      logger.info('AI Service: Auto-initializing with default config');
+      await initializeAI();
+    }
+
+    if (!engineManager) {
+      throw new AIError('Loading engine not available');
+    }
     
-    // Placeholder: Generate random vector
-    // nomic-embed-text produces 768-dimensional embeddings
-    const dimensionality = 768;
-    const vector = Array.from({ length: dimensionality }, () => Math.random());
+    // Generate embedding using the current engine
+    const vector = await engineManager.generateEmbedding(text);
     
     return {
       vector,
-      dimensionality,
+      dimensionality: vector.length,
     };
   } catch (error) {
     if (error instanceof AIError || error instanceof Error && error.name === 'ValidationError') {

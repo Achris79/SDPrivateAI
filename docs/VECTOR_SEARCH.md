@@ -44,11 +44,26 @@ console.log(result.vector.length); // 768
 console.log(result.dimensionality); // 768
 ```
 
-**Aktueller Stand**: Placeholder-Implementierung mit Random-Vektoren.  
-**TODO**: Integration mit echtem nomic-embed-text Modell über:
-- transformers.js
-- ONNX Runtime Web
-- Tauri Command mit llama.cpp/nomic-embed
+**Aktueller Stand**: Production-Ready mit ONNX Runtime (Primary) und transformers.js (Fallback)  
+**Siehe**: [AI_LOADING_ENGINE.md](./AI_LOADING_ENGINE.md) für vollständige Dokumentation
+
+**Verwendung:**
+
+```typescript
+import { initializeAI, generateEmbedding, EngineStrategy } from './services/ai';
+
+// Auto-Modus: ONNX primär, WASM fallback
+await initializeAI({
+  modelName: 'nomic-ai/nomic-embed-text-v1.5',
+  dimension: 768,
+  strategy: EngineStrategy.AUTO,
+});
+
+// Embedding generieren
+const result = await generateEmbedding('Mein Text für die Vektorisierung');
+console.log(result.vector.length); // 768
+console.log(result.dimensionality); // 768
+```
 
 ### 2. Vector Storage
 
@@ -201,10 +216,12 @@ qdrant-client = "1.0"
 - [x] `semanticSearch()` Funktion
 - [x] Beispiele erstellt
 
-### Phase 3: Echte Modell-Integration 🔄
-- [ ] transformers.js Integration
-- [ ] ONNX Runtime Web Setup
-- [ ] Oder: Tauri Command mit llama.cpp/nomic-embed
+### Phase 3: Echte Modell-Integration ✅
+- [x] ONNX Runtime Web Integration (Primary)
+- [x] transformers.js Integration (Fallback)
+- [x] Loading Engine Manager implementiert
+- [x] Automatischer Fallback-Mechanismus
+- [ ] Siehe [AI_LOADING_ENGINE.md](./AI_LOADING_ENGINE.md) für Details
 
 ### Phase 4: Performance-Optimierung 📅
 - [ ] Benchmarking mit verschiedenen Datenmengen
