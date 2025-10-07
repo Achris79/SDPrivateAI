@@ -21,7 +21,7 @@ export const MODEL_REGISTRY: Record<string, ModelInfo> = {
   'phi-3-mini': {
     id: 'phi-3-mini',
     name: 'Phi-3 Mini',
-    description: 'Microsoft Phi-3 Mini - Small, efficient language model',
+    description: 'Microsoft Phi-3 Mini - Small, efficient language model (Requires 4GB+ RAM, 4+ CPU cores)',
     modelName: 'microsoft/Phi-3-mini-4k-instruct',
     dimension: 3072,
     type: 'llm',
@@ -30,7 +30,7 @@ export const MODEL_REGISTRY: Record<string, ModelInfo> = {
   'phi-2': {
     id: 'phi-2',
     name: 'Phi-2',
-    description: 'Microsoft Phi-2 - Compact language model',
+    description: 'Microsoft Phi-2 - Compact language model (Requires 2GB+ RAM, 2+ CPU cores)',
     modelName: 'microsoft/phi-2',
     dimension: 2560,
     type: 'llm',
@@ -39,7 +39,7 @@ export const MODEL_REGISTRY: Record<string, ModelInfo> = {
   'nomic-embed': {
     id: 'nomic-embed',
     name: 'Nomic Embed Text',
-    description: 'Nomic AI embedding model - High quality text embeddings',
+    description: 'Nomic AI embedding model - High quality text embeddings (Requires 2GB+ RAM)',
     modelName: 'nomic-ai/nomic-embed-text-v1.5',
     dimension: 768,
     type: 'embedding',
@@ -48,7 +48,7 @@ export const MODEL_REGISTRY: Record<string, ModelInfo> = {
   'all-minilm': {
     id: 'all-minilm',
     name: 'All-MiniLM-L6',
-    description: 'Sentence Transformers - Fast and efficient embeddings',
+    description: 'Sentence Transformers - Fast and efficient embeddings (Requires 1GB+ RAM, works on low-end devices)',
     modelName: 'sentence-transformers/all-MiniLM-L6-v2',
     dimension: 384,
     type: 'embedding',

@@ -19,11 +19,20 @@ import { AIError, logger } from '../../errors';
 import { validateNotEmpty, validateArray } from '../../utils/validation';
 import { LoadingEngineManager, EngineStrategy, LoadingEngineType } from './loaders';
 import { getDefaultModel, getModelById, getAllModels, getModelsByType, ModelInfo, MODEL_REGISTRY, DEFAULT_MODEL_ID } from './models';
+import { 
+  detectDeviceCapabilities, 
+  getRecommendedModel, 
+  getCompatibleModels,
+  isModelCompatible,
+  type DeviceCapabilities,
+  type ModelWithRequirements,
+} from '../device';
 
 // Re-export types for convenience
 export { LoadingEngineType, EngineStrategy } from './loaders';
 export { ModelInfo, MODEL_REGISTRY, DEFAULT_MODEL_ID } from './models';
 export { getDefaultModel, getModelById, getAllModels, getModelsByType } from './models';
+export { type DeviceCapabilities, type ModelWithRequirements } from '../device';
 
 export interface EmbeddingResult {
   vector: number[];
@@ -39,6 +48,7 @@ export interface AIServiceConfig {
   modelPath?: string;
   dimension?: number;
   strategy?: EngineStrategy;
+  autoSelectModel?: boolean; // Auto-select model based on device capabilities
 }
 
 /**
@@ -52,6 +62,41 @@ const DEFAULT_CONFIG: AIServiceConfig = {
 let engineManager: LoadingEngineManager | null = null;
 let isInitialized = false;
 let currentModelInfo: ModelInfo | null = null;
+let deviceCapabilities: DeviceCapabilities | null = null;
+
+/**
+ * Get device capabilities (cached)
+ */
+export function getDeviceCapabilities(): DeviceCapabilities {
+  if (!deviceCapabilities) {
+    deviceCapabilities = detectDeviceCapabilities();
+  }
+  return deviceCapabilities;
+}
+
+/**
+ * Get compatible models for current device
+ */
+export function getDeviceCompatibleModels(type?: 'embedding' | 'llm'): ModelWithRequirements[] {
+  const capabilities = getDeviceCapabilities();
+  return getCompatibleModels(capabilities, type);
+}
+
+/**
+ * Get recommended model for current device
+ */
+export function getDeviceRecommendedModel(type?: 'embedding' | 'llm'): ModelWithRequirements | null {
+  const capabilities = getDeviceCapabilities();
+  return getRecommendedModel(capabilities, type);
+}
+
+/**
+ * Check if a model is compatible with current device
+ */
+export function isDeviceCompatible(modelId: string): boolean {
+  const capabilities = getDeviceCapabilities();
+  return isModelCompatible(modelId, capabilities);
+}
 
 /**
  * Initialize the AI service with loading engine
@@ -61,6 +106,23 @@ export async function initializeAI(config: AIServiceConfig = {}): Promise<void> 
   try {
     const finalConfig = { ...DEFAULT_CONFIG, ...config };
     
+    // Auto-select model based on device capabilities if requested
+    if (finalConfig.autoSelectModel && !finalConfig.modelId) {
+      const capabilities = getDeviceCapabilities();
+      const recommended = getRecommendedModel(capabilities);
+      
+      if (recommended) {
+        logger.info('Auto-selected model based on device capabilities', {
+          modelId: recommended.id,
+          modelName: recommended.name,
+          deviceTier: capabilities.tier,
+        });
+        finalConfig.modelId = recommended.id;
+      } else {
+        logger.warn('No compatible model found for device, using default');
+      }
+    }
+    
     // Resolve model info from registry or use provided config
     let modelInfo: ModelInfo;
     if (finalConfig.modelId) {
@@ -68,6 +130,15 @@ export async function initializeAI(config: AIServiceConfig = {}): Promise<void> 
       if (!registryModel) {
         throw new AIError(`Model with ID '${finalConfig.modelId}' not found in registry`);
       }
+      
+      // Check device compatibility
+      if (!isDeviceCompatible(finalConfig.modelId)) {
+        logger.warn('Selected model may not be optimal for this device', {
+          modelId: finalConfig.modelId,
+          deviceCapabilities: getDeviceCapabilities(),
+        });
+      }
+      
       modelInfo = registryModel;
     } else if (finalConfig.modelName) {
       // Fallback: create model info from provided config
