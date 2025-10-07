@@ -1,4 +1,4 @@
-# Vector Search Implementation - Summary
+# Vector Search - Validation & Testing Summary
 
 ## Aufgabe
 "Implementiere die Vector Suche in der SQLite Datenbank. Achte auf wartbaren Code und saubere Fehlerbehandlung."
