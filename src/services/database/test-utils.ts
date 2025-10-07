@@ -20,6 +20,8 @@ import {
   getEmbeddingsByDocumentId,
   deleteEmbedding,
   deleteEmbeddingsByDocumentId,
+  searchSimilarEmbeddings,
+  semanticSearch,
   closeDatabase,
 } from './index';
 
@@ -193,6 +195,133 @@ export async function runDatabaseTests(): Promise<TestResult[]> {
     } catch (error) {
       results.push({
         test: 'Verify document deleted',
+        passed: false,
+        error: String(error),
+      });
+    }
+
+    // Test 13: Vector similarity search
+    try {
+      // Create test documents and embeddings for vector search
+      await createDocument('vec-doc-1', 'AI Document', 'About artificial intelligence');
+      await createDocument('vec-doc-2', 'ML Document', 'About machine learning');
+      
+      // Create embeddings with different similarity levels
+      const baseVector = [0.5, 0.5, 0.5, 0.5, 0.5];
+      const similarVector = [0.52, 0.48, 0.51, 0.49, 0.5]; // Similar to base
+      const differentVector = [-0.5, -0.5, -0.5, -0.5, -0.5]; // Opposite
+      
+      await createEmbedding('vec-emb-1', 'vec-doc-1', baseVector);
+      await createEmbedding('vec-emb-2', 'vec-doc-2', similarVector);
+      await createEmbedding('vec-emb-3', 'vec-doc-2', differentVector);
+      
+      // Search with base vector
+      const searchResults = await searchSimilarEmbeddings(baseVector, 10, 0.5);
+      
+      // Should find similar vectors and filter out dissimilar ones
+      const hasSimilarResults = searchResults.length > 0;
+      const resultsAreSorted = searchResults.length <= 1 || 
+        searchResults[0].similarity >= searchResults[searchResults.length - 1].similarity;
+      
+      results.push({
+        test: 'Vector similarity search',
+        passed: hasSimilarResults && resultsAreSorted,
+      });
+      
+      // Cleanup
+      await deleteDocument('vec-doc-1');
+      await deleteDocument('vec-doc-2');
+    } catch (error) {
+      results.push({
+        test: 'Vector similarity search',
+        passed: false,
+        error: String(error),
+      });
+    }
+
+    // Test 14: Semantic search
+    try {
+      // Create test documents with embeddings
+      await createDocument(
+        'sem-doc-1',
+        'Machine Learning Guide',
+        'A comprehensive guide to machine learning algorithms and techniques'
+      );
+      await createDocument(
+        'sem-doc-2',
+        'Cooking Recipes',
+        'Delicious recipes for everyday cooking'
+      );
+      
+      // Import AI service to generate embeddings
+      const { generateEmbedding } = await import('../ai');
+      
+      const mlEmbedding = await generateEmbedding('machine learning guide');
+      const cookingEmbedding = await generateEmbedding('cooking recipes');
+      
+      await createEmbedding('sem-emb-1', 'sem-doc-1', mlEmbedding.vector);
+      await createEmbedding('sem-emb-2', 'sem-doc-2', cookingEmbedding.vector);
+      
+      // Semantic search for machine learning content
+      const semanticResults = await semanticSearch('machine learning', 5, 0.0);
+      
+      results.push({
+        test: 'Semantic search',
+        passed: semanticResults.length > 0 && semanticResults[0].similarity !== undefined,
+      });
+      
+      // Cleanup
+      await deleteDocument('sem-doc-1');
+      await deleteDocument('sem-doc-2');
+    } catch (error) {
+      results.push({
+        test: 'Semantic search',
+        passed: false,
+        error: String(error),
+      });
+    }
+
+    // Test 15: Vector search with validation errors
+    try {
+      let validationError = false;
+      
+      // Test with empty vector
+      try {
+        await searchSimilarEmbeddings([], 10, 0.5);
+      } catch (error) {
+        validationError = error instanceof Error && error.name === 'ValidationError';
+      }
+      
+      results.push({
+        test: 'Vector search validation (empty vector)',
+        passed: validationError,
+      });
+    } catch (error) {
+      results.push({
+        test: 'Vector search validation (empty vector)',
+        passed: false,
+        error: String(error),
+      });
+    }
+
+    // Test 16: Vector search with invalid similarity threshold
+    try {
+      let validationError = false;
+      
+      // Test with invalid minSimilarity > 1
+      try {
+        await searchSimilarEmbeddings([0.1, 0.2], 10, 1.5);
+      } catch (error) {
+        validationError = error instanceof Error && error.name === 'ValidationError';
+      }
+      
+      results.push({
+        test: 'Vector search validation (invalid threshold)',
+        passed: validationError,
+      });
+    } catch (error) {
+      results.push({
+        test: 'Vector search validation (invalid threshold)',
         passed: false,
         error: String(error),
       });

@@ -829,12 +829,35 @@ export async function searchSimilarEmbeddings(
   }
 
   try {
-    validateArray(queryVector, 'query vector', 1);
+    // Validate input parameters
+    validateArray(queryVector, 'query vector', 1, 10000);
     validateNumber(limit, 'limit', 1, 1000);
     validateNumber(minSimilarity, 'min similarity', 0, 1);
 
+    // Validate all query vector elements are valid numbers
+    for (let i = 0; i < queryVector.length; i++) {
+      if (!Number.isFinite(queryVector[i])) {
+        throw new ValidationError(
+          `Query vector contains invalid value at index ${i}`,
+          'query vector',
+          { index: i, value: queryVector[i] }
+        );
+      }
+    }
+
     // Get all embeddings
     const allEmbeddings = await listEmbeddings();
+
+    // Early return if no embeddings exist
+    if (allEmbeddings.length === 0) {
+      logger.info('Vector similarity search completed - no embeddings found', {
+        totalEmbeddings: 0,
+        resultsCount: 0,
+        limit,
+        minSimilarity,
+      });
+      return [];
+    }
 
     // Calculate similarity for each embedding
     const withSimilarity = allEmbeddings.map((emb) => {
@@ -857,6 +880,7 @@ export async function searchSimilarEmbeddings(
       resultsCount: filtered.length,
       limit,
       minSimilarity,
+      queryVectorDimensions: queryVector.length,
     });
 
     return filtered;
@@ -878,21 +902,47 @@ export async function searchSimilarEmbeddings(
 
 /**
  * Calculate cosine similarity between two vectors
+ * Cosine similarity measures the cosine of the angle between two vectors,
+ * resulting in a value between -1 and 1, where:
+ * - 1 indicates identical direction (maximum similarity)
+ * - 0 indicates orthogonal vectors (no similarity)
+ * - -1 indicates opposite direction (maximum dissimilarity)
+ * 
+ * For normalized embeddings, the result is typically between 0 and 1.
+ * 
  * @param a - First vector
  * @param b - Second vector
  * @returns Similarity score between -1 and 1 (typically 0-1 for embeddings)
+ * @throws Returns 0 for incompatible vectors, invalid values, or zero vectors
  */
 function calculateCosineSimilarity(a: number[], b: number[]): number {
+  // Check dimension compatibility
   if (a.length !== b.length) {
+    logger.warn('Vector dimension mismatch in cosine similarity calculation', {
+      vectorALength: a.length,
+      vectorBLength: b.length,
+    });
     return 0; // Incompatible vectors
+  }
+
+  // Early return for empty vectors
+  if (a.length === 0) {
+    return 0;
   }
 
   let dotProduct = 0;
   let normA = 0;
   let normB = 0;
 
+  // Calculate dot product and norms in a single pass
   for (let i = 0; i < a.length; i++) {
+    // Validate finite numbers
     if (!Number.isFinite(a[i]) || !Number.isFinite(b[i])) {
+      logger.warn('Invalid values in vector similarity calculation', {
+        index: i,
+        valueA: a[i],
+        valueB: b[i],
+      });
       return 0; // Invalid values
     }
     dotProduct += a[i] * b[i];
@@ -900,12 +950,22 @@ function calculateCosineSimilarity(a: number[], b: number[]): number {
     normB += b[i] * b[i];
   }
 
-  const denominator = Math.sqrt(normA) * Math.sqrt(normB);
+  // Calculate magnitudes
+  const magnitudeA = Math.sqrt(normA);
+  const magnitudeB = Math.sqrt(normB);
+  const denominator = magnitudeA * magnitudeB;
+
+  // Check for zero vectors
   if (denominator === 0) {
+    logger.warn('Zero vector detected in cosine similarity calculation');
     return 0; // Zero vectors
   }
 
-  return dotProduct / denominator;
+  // Calculate and return cosine similarity
+  const similarity = dotProduct / denominator;
+  
+  // Clamp to valid range to handle floating-point precision issues
+  return Math.max(-1, Math.min(1, similarity));
 }
 
 /**
@@ -914,9 +974,10 @@ function calculateCosineSimilarity(a: number[], b: number[]): number {
  * @param queryText - The text to search for
  * @param limit - Maximum number of results to return (default: 10)
  * @param minSimilarity - Minimum similarity threshold (0-1, default: 0.5)
- * @returns Array of documents with similarity scores
+ * @returns Array of documents with similarity scores, sorted by similarity (highest first)
  * @throws {DatabaseError} If database operation fails
  * @throws {ValidationError} If input validation fails
+ * @throws {AIError} If embedding generation fails
  */
 export async function semanticSearch(
   queryText: string,
@@ -928,13 +989,28 @@ export async function semanticSearch(
   }
 
   try {
+    // Validate input parameters
     validateNotEmpty(queryText, 'query text');
+    validateStringLength(queryText, 'query text', 1, 10000);
     validateNumber(limit, 'limit', 1, 1000);
     validateNumber(minSimilarity, 'min similarity', 0, 1);
+
+    logger.info('Starting semantic search', {
+      queryLength: queryText.length,
+      limit,
+      minSimilarity,
+    });
 
     // Import AI service to generate embedding
     const { generateEmbedding } = await import('../ai');
     const { vector: queryVector } = await generateEmbedding(queryText);
+
+    // Validate generated vector
+    if (!queryVector || queryVector.length === 0) {
+      throw new DatabaseError('Failed to generate embedding: empty vector returned', {
+        queryLength: queryText.length,
+      });
+    }
 
     // Search for similar embeddings
     const similarEmbeddings = await searchSimilarEmbeddings(
@@ -942,6 +1018,17 @@ export async function semanticSearch(
       limit * 2, // Get more results to account for multiple embeddings per document
       minSimilarity
     );
+
+    // Early return if no similar embeddings found
+    if (similarEmbeddings.length === 0) {
+      logger.info('Semantic search completed - no results above similarity threshold', {
+        queryLength: queryText.length,
+        resultsCount: 0,
+        limit,
+        minSimilarity,
+      });
+      return [];
+    }
 
     // Get unique documents and calculate average similarity if multiple embeddings exist
     const documentMap = new Map<string, { document: Document; similarities: number[] }>();
@@ -958,6 +1045,11 @@ export async function semanticSearch(
             similarities: [emb.similarity],
           });
         }
+      } else {
+        logger.warn('Embedding references non-existent document', {
+          embeddingId: emb.id,
+          documentId: emb.documentId,
+        });
       }
     }
 
@@ -973,6 +1065,7 @@ export async function semanticSearch(
     logger.info('Semantic search completed', {
       queryLength: queryText.length,
       resultsCount: results.length,
+      uniqueDocuments: documentMap.size,
       limit,
       minSimilarity,
     });
