@@ -29,10 +29,11 @@ Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweis
   - Eigenes Modell?
 
 ### AI/ML Integration
-- [ ] Wie sollen die AI-Modelle geladen werden?
-  - Via WASM?
-  - Via native Bindings (llama.cpp)?
-  - ONNX Runtime?
+- [x] Wie sollen die AI-Modelle geladen werden?
+  - ✅ ONNX Runtime Web (Primary - optimized performance)
+  - ✅ WASM via transformers.js (Fallback - compatibility)
+  - Via native Bindings (llama.cpp)? (Future consideration)
+- [x] Lade-Engine implementiert mit automatischem Fallback
 - [ ] Welche Modelle sollen unterstützt werden?
 - [ ] Wo werden Modelle gespeichert (lokaler Cache)?
 - [ ] Modell-Update-Mechanismus definieren
