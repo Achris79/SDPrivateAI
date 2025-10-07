@@ -16,7 +16,8 @@ React + TypeScript	Modernes, typsicheres UI-Frontend
 Syncfusion React Components	Professionelle GUI-Komponenten (DataGrid, Charts, Dialogs, Inputs etc.)
 SQLite	Lokale Datenbank für strukturierte Daten
 Vektor-Suche (SQLite + Cosine Similarity)	Semantische Suche mit In-Memory Vector Similarity
-nomic-embed-text (768D)	Lokales Embedding-Modell für semantische Vektorisierung
+AI Models (Phi-3 Mini, Phi-2, Nomic Embed, etc.)	Flexible lokale Embedding-Modelle mit Runtime Model Switching
+ONNX Runtime + WASM	Dual loading engine für optimale Performance
 
 ## 🖼️ Features (geplant)
 
@@ -46,6 +47,7 @@ Die vollständige Dokumentation findest du in folgenden Dateien:
 - **[QUICKSTART.md](./docs/QUICKSTART.md)** - 🚀 Schnellstart-Guide (5 Minuten)
 - **[INSTALLATION.md](./docs/INSTALLATION.md)** - 🔧 Detaillierte Installation & Setup
 - **[DOCUMENTATION.md](./docs/DOCUMENTATION.md)** - 📖 Vollständige Projekt-Dokumentation
+- **[AI_MODEL_SELECTION.md](./docs/AI_MODEL_SELECTION.md)** - 🤖 Flexible AI Model Selection & Switching
 - **[ARCHITECTURE_OPTIMIZATION.md](./docs/ARCHITECTURE_OPTIMIZATION.md)** - 🏗️ Architektur-Optimierungen & Best Practices
 - **[ARCHITECTURE_IMPLEMENTATION_SUMMARY.md](./docs/ARCHITECTURE_IMPLEMENTATION_SUMMARY.md)** - 📝 Implementierungs-Zusammenfassung: Architektur
 - **[ARCHITECTURE_DIAGRAM.md](./docs/ARCHITECTURE_DIAGRAM.md)** - 📊 Visuelle Architektur-Diagramme

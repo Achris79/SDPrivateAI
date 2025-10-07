@@ -118,6 +118,12 @@ async function initializeAI(config?: AIServiceConfig): Promise<void>
 // Engine-Info
 function getCurrentEngine(): LoadingEngineType | null
 
+// Model-Info
+function getCurrentModel(): ModelInfo | null
+
+// Model wechseln
+async function switchModel(modelId: string, config?: Partial<AIServiceConfig>): Promise<void>
+
 // Cleanup
 async function disposeAI(): Promise<void>
 
@@ -127,26 +133,99 @@ async function generateEmbedding(text: string): Promise<EmbeddingResult>
 
 **Auto-Initialisierung:**
 - Bei erster Verwendung von `generateEmbedding()` wird automatisch initialisiert
-- Verwendet WASM-Fallback wenn kein Modell-Pfad angegeben
+- Verwendet Phi-3 Mini als Standard-Modell
+- Automatischer Fallback zu WASM wenn kein Modell-Pfad angegeben
 - Keine manuelle Initialisierung nötig (aber empfohlen für bessere Kontrolle)
 
-#### 7. Dokumentation
+#### 7. Flexible Model Selection (NEU)
+
+**Neue Dateien:**
+```
+src/services/ai/models.ts                    # Model Registry
+src/examples/model-switching-examples.ts     # Usage Examples
+docs/AI_MODEL_SELECTION.md                   # Comprehensive Documentation
+```
+
+**Features:**
+- ✅ Model Registry mit vorkonfigurierten Modellen
+- ✅ Phi-3 Mini als Standard-Modell
+- ✅ Runtime Model Switching (wechseln zwischen Modellen)
+- ✅ Automatischer Model Download von HuggingFace
+- ✅ Support für LLM und Embedding Models
+- ✅ Flexible Custom Model Configuration
+
+**Verfügbare Modelle:**
+```typescript
+// Language Models (LLM)
+'phi-3-mini'    // Microsoft Phi-3 Mini (Default) - 3072 dim
+'phi-2'         // Microsoft Phi-2 - 2560 dim
+
+// Embedding Models
+'nomic-embed'   // Nomic Embed Text v1.5 - 768 dim
+'all-minilm'    // All-MiniLM-L6-v2 - 384 dim
+```
+
+**API Beispiele:**
+```typescript
+// Standard: Phi-3 Mini
+await initializeAI();
+
+// Spezifisches Modell
+await initializeAI({ modelId: 'nomic-embed' });
+
+// Model wechseln
+await switchModel('phi-2');
+
+// Aktuelles Model abfragen
+const model = getCurrentModel();
+console.log(model?.name); // "Phi-2"
+
+// Alle verfügbaren Modelle
+const allModels = getAllModels();
+
+// Modelle nach Typ
+const llmModels = getModelsByType('llm');
+const embeddingModels = getModelsByType('embedding');
+```
+
+**Model Download:**
+- Modelle werden automatisch von HuggingFace heruntergeladen
+- Browser-Cache für persistente Speicherung
+- Quantisierte Modelle für bessere Performance
+- Erste Verwendung: Download (einmalig)
+- Weitere Verwendungen: Sofortiges Laden aus Cache
+
+
+#### 8. Dokumentation
 
 **Neu erstellt:**
 
-1. **`docs/AI_LOADING_ENGINE.md`** (7.8 KB)
+1. **`docs/AI_MODEL_SELECTION.md`** (9.0 KB)
+   - Flexible Model Selection Guide
+   - Verfügbare Modelle
+   - Model Switching API
+   - Usage Examples
+   - Best Practices
+
+2. **`docs/AI_LOADING_ENGINE.md`** (7.8 KB)
    - Vollständige Architektur-Dokumentation
    - Verwendungsbeispiele
    - Performance-Vergleich
    - Best Practices
    - Troubleshooting
 
-2. **`src/services/ai/loaders/README.md`** (5.3 KB)
+3. **`src/services/ai/loaders/README.md`** (5.3 KB)
    - Technische Dokumentation der Loader
    - Implementierungsdetails
    - Anleitung zum Hinzufügen neuer Loader
 
-3. **`src/examples/ai-loading-engine-examples.ts`** (7.9 KB)
+4. **`src/examples/model-switching-examples.ts`** (4.5 KB)
+   - 7 vollständige Beispiele für Model Selection
+   - Model Switching
+   - Listing und Filtering
+   - Custom Models
+
+5. **`src/examples/ai-loading-engine-examples.ts`** (7.9 KB)
    - 6 vollständige Beispiele
    - Verschiedene Strategien
    - Error Handling
@@ -156,8 +235,9 @@ async function generateEmbedding(text: string): Promise<EmbeddingResult>
 - `docs/TODO.md` - AI/ML Integration als abgeschlossen markiert
 - `docs/VECTOR_SEARCH.md` - Integration mit neuer Engine dokumentiert
 - `docs/VECTOR_SEARCH_IMPLEMENTATION.md` - Phase 1 als abgeschlossen markiert
+- `docs/IMPLEMENTATION_SUMMARY.md` - Flexible Model Selection hinzugefügt
 
-#### 8. Build & Tests
+#### 9. Build & Tests
 
 **Status:** ✅ Alle Builds erfolgreich
 
@@ -176,14 +256,28 @@ npm run build
 
 ## Verwendung
 
-### Einfachste Verwendung (Auto-WASM)
+### Einfachste Verwendung (Auto-WASM mit Phi-3 Mini)
 
 ```typescript
 import { generateEmbedding } from './services/ai';
 
-// Auto-initialisiert mit WASM
+// Auto-initialisiert mit Phi-3 Mini (Default)
 const result = await generateEmbedding('Hello, world!');
+console.log(result.vector.length); // 3072 (Phi-3 Mini dimension)
+```
+
+### Mit spezifischem Modell
+
+```typescript
+import { initializeAI } from './services/ai';
+
+// Nomic Embed für Text-Embeddings
+await initializeAI({ modelId: 'nomic-embed' });
+const result = await generateEmbedding('My text');
 console.log(result.vector.length); // 768
+
+// Phi-2 für LLM
+await initializeAI({ modelId: 'phi-2' });
 ```
 
 ### Mit ONNX-Modell
@@ -193,11 +287,30 @@ import { initializeAI, EngineStrategy } from './services/ai';
 
 // Explizite Initialisierung mit ONNX
 await initializeAI({
-  modelPath: '/models/nomic-embed-text.onnx',
+  modelId: 'phi-3-mini',
+  modelPath: '/models/phi-3-mini.onnx',
   strategy: EngineStrategy.AUTO, // Fallback zu WASM wenn ONNX fehlt
 });
 
 const result = await generateEmbedding('My text');
+```
+
+### Model Switching
+
+```typescript
+import { switchModel, getCurrentModel } from './services/ai';
+
+// Start mit Default (Phi-3 Mini)
+await initializeAI();
+console.log(getCurrentModel()?.name); // "Phi-3 Mini"
+
+// Wechsel zu Nomic Embed
+await switchModel('nomic-embed');
+console.log(getCurrentModel()?.name); // "Nomic Embed Text"
+
+// Wechsel zu All-MiniLM
+await switchModel('all-minilm');
+console.log(getCurrentModel()?.name); // "All-MiniLM-L6"
 ```
 
 ### Nur WASM verwenden
@@ -206,7 +319,7 @@ const result = await generateEmbedding('My text');
 import { initializeAI, EngineStrategy } from './services/ai';
 
 await initializeAI({
-  modelName: 'nomic-ai/nomic-embed-text-v1.5',
+  modelId: 'phi-3-mini',
   strategy: EngineStrategy.WASM_ONLY,
 });
 ```
@@ -263,22 +376,29 @@ await initializeAI({
 
 ### Empfohlene Erweiterungen
 
-1. **Modell-Bereitstellung** (Priorität: HOCH)
-   - [ ] ONNX-Modell konvertieren und bereitstellen
-   - [ ] Modell-Download-UI implementieren
-   - [ ] Lokales Modell-Caching
+1. **UI für Model Selection** (Priorität: HOCH) ✨ NEU
+   - [ ] Model Selector Komponente erstellen
+   - [ ] Download-Progress anzeigen
+   - [ ] Aktuelles Model im UI anzeigen
+   - [ ] Model-Informationen (Dimension, Type) anzeigen
 
-2. **Batch-Processing** (Priorität: MITTEL)
+2. **Modell-Bereitstellung** (Priorität: MITTEL)
+   - [ ] ONNX-Modell für Phi-3 konvertieren und bereitstellen
+   - [ ] ONNX-Modell für andere Modelle konvertieren
+   - [ ] Lokales Modell-Caching optimieren
+   - [ ] Modell-Update-Mechanismus
+
+3. **Batch-Processing** (Priorität: MITTEL)
    - [ ] Batch-Embedding-Generierung
    - [ ] Queue-System für große Mengen
    - [ ] Progress-Tracking
 
-3. **Performance-Monitoring** (Priorität: MITTEL)
-   - [ ] Metriken sammeln
+4. **Performance-Monitoring** (Priorität: MITTEL)
+   - [ ] Metriken sammeln (Download-Zeit, Inferenz-Zeit)
    - [ ] Performance-Dashboard
-   - [ ] Benchmark-Suite
+   - [ ] Benchmark-Suite für verschiedene Modelle
 
-4. **Native Integration** (Priorität: NIEDRIG)
+5. **Native Integration** (Priorität: NIEDRIG)
    - [ ] Tauri Command für native Inferenz
    - [ ] Rust-seitige llama.cpp Integration
    - [ ] Platform-spezifische Optimierungen
