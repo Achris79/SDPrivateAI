@@ -1,7 +1,9 @@
 /**
  * AI Service for embedding generation and model management
  * 
- * Uses nomic-embed-text model for local embedding generation (768 dimensions)
+ * Supports multiple AI models with flexible switching:
+ * - Default: Microsoft Phi-3 Mini (small, efficient language model)
+ * - Alternative models: Phi-2, Nomic Embed Text, All-MiniLM
  * 
  * Loading Engine Architecture:
  * - Primary: ONNX Runtime Web (optimized performance)
@@ -16,9 +18,12 @@
 import { AIError, logger } from '../../errors';
 import { validateNotEmpty, validateArray } from '../../utils/validation';
 import { LoadingEngineManager, EngineStrategy, LoadingEngineType } from './loaders';
+import { getDefaultModel, getModelById, getAllModels, getModelsByType, ModelInfo, MODEL_REGISTRY, DEFAULT_MODEL_ID } from './models';
 
 // Re-export types for convenience
 export { LoadingEngineType, EngineStrategy } from './loaders';
+export { ModelInfo, MODEL_REGISTRY, DEFAULT_MODEL_ID } from './models';
+export { getDefaultModel, getModelById, getAllModels, getModelsByType } from './models';
 
 export interface EmbeddingResult {
   vector: number[];
@@ -29,23 +34,24 @@ export interface EmbeddingResult {
  * AI Service Configuration
  */
 export interface AIServiceConfig {
-  modelName?: string;
+  modelId?: string;      // Model ID from registry (preferred)
+  modelName?: string;    // Direct HuggingFace model name (fallback)
   modelPath?: string;
   dimension?: number;
   strategy?: EngineStrategy;
 }
 
 /**
- * Default configuration for nomic-embed-text
+ * Default configuration using Phi-3 Mini
  */
 const DEFAULT_CONFIG: AIServiceConfig = {
-  modelName: 'nomic-ai/nomic-embed-text-v1.5',
-  dimension: 768,
+  modelId: DEFAULT_MODEL_ID,
   strategy: EngineStrategy.AUTO,
 };
 
 let engineManager: LoadingEngineManager | null = null;
 let isInitialized = false;
+let currentModelInfo: ModelInfo | null = null;
 
 /**
  * Initialize the AI service with loading engine
@@ -55,26 +61,54 @@ export async function initializeAI(config: AIServiceConfig = {}): Promise<void> 
   try {
     const finalConfig = { ...DEFAULT_CONFIG, ...config };
     
+    // Resolve model info from registry or use provided config
+    let modelInfo: ModelInfo;
+    if (finalConfig.modelId) {
+      const registryModel = getModelById(finalConfig.modelId);
+      if (!registryModel) {
+        throw new AIError(`Model with ID '${finalConfig.modelId}' not found in registry`);
+      }
+      modelInfo = registryModel;
+    } else if (finalConfig.modelName) {
+      // Fallback: create model info from provided config
+      modelInfo = {
+        id: 'custom',
+        name: 'Custom Model',
+        description: 'Custom model configuration',
+        modelName: finalConfig.modelName,
+        dimension: finalConfig.dimension || 768,
+        type: 'embedding',
+        modelPath: finalConfig.modelPath,
+      };
+    } else {
+      // Use default model
+      modelInfo = getDefaultModel();
+    }
+    
     logger.info('AI Service: Initializing', {
-      modelName: finalConfig.modelName,
+      modelId: modelInfo.id,
+      modelName: modelInfo.modelName,
       strategy: finalConfig.strategy,
     });
 
     engineManager = LoadingEngineManager.getInstance();
     await engineManager.initialize({
-      modelName: finalConfig.modelName!,
-      modelPath: finalConfig.modelPath,
-      dimension: finalConfig.dimension!,
+      modelName: modelInfo.modelName,
+      modelPath: modelInfo.modelPath || finalConfig.modelPath,
+      dimension: modelInfo.dimension,
       strategy: finalConfig.strategy,
     });
 
     isInitialized = true;
+    currentModelInfo = modelInfo;
     
     logger.info('AI Service: Initialized successfully', {
+      modelId: modelInfo.id,
       engine: engineManager.getCurrentEngine(),
     });
   } catch (error) {
     isInitialized = false;
+    currentModelInfo = null;
     throw new AIError('Failed to initialize AI service', {
       originalError: error instanceof Error ? error.message : 'Unknown error',
     });
@@ -89,6 +123,36 @@ export function getCurrentEngine(): LoadingEngineType | null {
 }
 
 /**
+ * Get current model information
+ */
+export function getCurrentModel(): ModelInfo | null {
+  return currentModelInfo;
+}
+
+/**
+ * Switch to a different model
+ * @param modelId - Model ID from registry or custom config
+ * @param config - Optional additional configuration
+ */
+export async function switchModel(modelId: string, config: Partial<AIServiceConfig> = {}): Promise<void> {
+  logger.info('AI Service: Switching model', { modelId });
+  
+  // Dispose current model
+  await disposeAI();
+  
+  // Initialize with new model
+  await initializeAI({
+    modelId,
+    ...config,
+  });
+  
+  logger.info('AI Service: Model switched successfully', { 
+    modelId,
+    newModel: currentModelInfo?.name,
+  });
+}
+
+/**
  * Dispose AI service resources
  */
 export async function disposeAI(): Promise<void> {
@@ -96,6 +160,7 @@ export async function disposeAI(): Promise<void> {
     await engineManager.dispose();
     engineManager = null;
     isInitialized = false;
+    currentModelInfo = null;
   }
 }
 
