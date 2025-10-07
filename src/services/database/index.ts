@@ -22,16 +22,23 @@ import {
 } from '../../utils/validation';
 
 let db: Database | null = null;
+let isInitialized = false;
 
 /**
  * Initialize the database connection
  * @throws {DatabaseError} If database initialization fails
  */
 export async function initDatabase(): Promise<void> {
+  if (isInitialized && db) {
+    logger.info('Database already initialized');
+    return;
+  }
+
   try {
     db = await Database.load('sqlite:sd-private-ai.db');
     await createTables();
     await createIndexes();
+    isInitialized = true;
     logger.info('Database initialized successfully');
   } catch (error) {
     const dbError = new DatabaseError(
@@ -129,6 +136,7 @@ export async function closeDatabase(): Promise<void> {
     try {
       await db.close();
       db = null;
+      isInitialized = false;
       logger.info('Database closed successfully');
     } catch (error) {
       logger.log(
@@ -139,6 +147,58 @@ export async function closeDatabase(): Promise<void> {
       );
     }
   }
+}
+
+/**
+ * Execute a database transaction
+ * Provides atomic operations with automatic rollback on error
+ * @param operation - Async function containing database operations
+ * @returns Result of the operation
+ * @throws {DatabaseError} If transaction fails
+ */
+export async function executeTransaction<T>(
+  operation: (db: Database) => Promise<T>
+): Promise<T> {
+  const database = getDatabase();
+  
+  try {
+    await database.execute('BEGIN TRANSACTION');
+    logger.info('Transaction started');
+    
+    const result = await operation(database);
+    
+    await database.execute('COMMIT');
+    logger.info('Transaction committed');
+    
+    return result;
+  } catch (error) {
+    try {
+      await database.execute('ROLLBACK');
+      logger.info('Transaction rolled back');
+    } catch (rollbackError) {
+      logger.log(
+        new DatabaseError('Failed to rollback transaction', {
+          originalError: rollbackError instanceof Error ? rollbackError.message : 'Unknown error'
+        })
+      );
+    }
+    
+    if (error instanceof DatabaseError || error instanceof ValidationError) {
+      throw error;
+    }
+    
+    throw new DatabaseError(
+      'Transaction failed',
+      { originalError: error instanceof Error ? error.message : 'Unknown error' }
+    );
+  }
+}
+
+/**
+ * Check if database is initialized
+ */
+export function isDatabaseInitialized(): boolean {
+  return isInitialized && db !== null;
 }
 
 // ==================== Document CRUD Operations ====================

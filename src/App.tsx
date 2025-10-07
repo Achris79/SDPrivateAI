@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import MainLayout from './components/layout/MainLayout';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import { useTheme } from './hooks/useTheme';
 import { initDatabase } from './services/database';
+import { performanceMonitor } from './services/performance';
 import { logger } from './errors';
 import './App.css';
 
@@ -11,10 +13,12 @@ function App() {
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
-    // Initialize database on app start with proper error handling
+    // Initialize database on app start with proper error handling and performance tracking
     const initApp = async () => {
       try {
-        await initDatabase();
+        await performanceMonitor.measure('app:initialization', async () => {
+          await initDatabase();
+        });
         logger.info('Application initialized successfully');
       } catch (error) {
         logger.log(
@@ -34,28 +38,30 @@ function App() {
   }, [theme]);
 
   return (
-    <MainLayout onThemeToggle={toggleTheme}>
-      <div style={{ 
-        padding: '24px',
-        color: theme.colors.text,
-        backgroundColor: theme.colors.background 
-      }}>
-        <h2>{t('common.loading')}</h2>
-        <p>Welcome to SD Private AI!</p>
-        <p>This is the basic structure. Components will be added in future iterations.</p>
-        
-        <div style={{ marginTop: '24px' }}>
-          <h3>Next Steps:</h3>
-          <ul>
-            <li>Configure Syncfusion license key</li>
-            <li>Implement document management features</li>
-            <li>Add vector search functionality</li>
-            <li>Integrate AI models</li>
-          </ul>
-          <p>See docs/TODO.md for complete task list.</p>
+    <ErrorBoundary>
+      <MainLayout onThemeToggle={toggleTheme}>
+        <div style={{ 
+          padding: '24px',
+          color: theme.colors.text,
+          backgroundColor: theme.colors.background 
+        }}>
+          <h2>{t('common.loading')}</h2>
+          <p>Welcome to SD Private AI!</p>
+          <p>This is the basic structure. Components will be added in future iterations.</p>
+          
+          <div style={{ marginTop: '24px' }}>
+            <h3>Next Steps:</h3>
+            <ul>
+              <li>Configure Syncfusion license key</li>
+              <li>Implement document management features</li>
+              <li>Add vector search functionality</li>
+              <li>Integrate AI models</li>
+            </ul>
+            <p>See docs/TODO.md for complete task list.</p>
+          </div>
         </div>
-      </div>
-    </MainLayout>
+      </MainLayout>
+    </ErrorBoundary>
   );
 }
 
