@@ -39,7 +39,7 @@ User Input
     │
     ▼
 ┌─────────────────────┐
-│ Input Validation    │ ◄── validateId(), validateStringLength(), etc.
+│ Input Validation    │ ← validateId(), validateStringLength(), etc.
 │ (validation.ts)     │
 └─────────────────────┘
     │
@@ -47,13 +47,13 @@ User Input
     │   │
     │   ▼
     │ ┌─────────────────────┐
-    │ │ Input Sanitization  │ ◄── sanitizeString()
+    │ │ Input Sanitization  │ ← sanitizeString()
     │ │ (validation.ts)     │
     │ └─────────────────────┘
     │   │
     │   ▼
     │ ┌─────────────────────┐
-    │ │ Business Logic      │ ◄── Database/AI Services
+    │ │ Business Logic      │ ← Database/AI Services
     │ │ (services/)         │
     │ └─────────────────────┘
     │   │
@@ -71,7 +71,7 @@ User Input
     │       │
     │       ▼
     │     ┌─────────────────────┐
-    │     │ Custom Error        │ ◄── DatabaseError, AIError, etc.
+    │     │ Custom Error        │ ← DatabaseError, AIError, etc.
     │     └─────────────────────┘
     │       │
     │       ▼
@@ -154,13 +154,13 @@ createDocument(id, title, content, metadata)
     ▼
 ┌──────────────────────────┐
 │ validateStringLength()   │ ─── ❌ → ValidationError
-│ (title, 1-500)          │
+│ (title, 1-500)           │
 └──────────────────────────┘
     │ ✅
     ▼
 ┌──────────────────────────┐
 │ validateStringLength()   │ ─── ❌ → ValidationError
-│ (content, 0-1MB)        │
+│ (content, 0-1MB)         │
 └──────────────────────────┘
     │ ✅
     ▼
@@ -173,7 +173,7 @@ createDocument(id, title, content, metadata)
 ┌──────────────────────────┐
 │ db.execute(              │
 │   INSERT ... VALUES      │
-│   (?, ?, ?, ...)        │ ─── ❌ → DatabaseError
+│   (?, ?, ?, ...)         │ ─── ❌ → DatabaseError
 │ )                        │
 └──────────────────────────┘
     │ ✅

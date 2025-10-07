@@ -82,23 +82,23 @@ User Input
     ↓
 [UI Component]
     ↓
-[Input Validation] ← Sanitization
+[Input Validation] → Sanitization
     ↓
-[Error Boundary] ← Error Handling
+[Error Boundary] → Error Handling
     ↓
 [Database Service]
     ↓
 [Transaction Begin]
     ↓
-[Create Document] ← Parameterized Query
+[Create Document] → Parameterized Query
     ↓
-[Create Embedding] ← Vector Generation
+[Create Embedding] → Vector Generation
     ↓
 [Transaction Commit]
     ↓
-[Cache Update] ← TTL Cache
+[Cache Update] → TTL Cache
     ↓
-[Performance Log] ← Metrics
+[Performance Log] → Metrics
     ↓
 Success Response
 ```
@@ -107,21 +107,25 @@ Success Response
 ```
 Search Query
     ↓
-[Cache Check] ─── Hit → Return Cached
-    ↓ Miss
-[Input Validation]
+[Cache Check]
     ↓
-[AI Service] ← Generate Query Vector
-    ↓
-[Database Service] ← Vector Similarity Search
-    ↓
-[Results Processing]
-    ↓
-[Cache Store] ← TTL: 5min
-    ↓
-[Performance Log]
-    ↓
-Return Results
+    ├─── Hit → Return Cached
+    │
+    └─── Miss
+         ↓
+    [Input Validation]
+         ↓
+    [AI Service] → Generate Query Vector
+         ↓
+    [Database Service] → Vector Similarity Search
+         ↓
+    [Results Processing]
+         ↓
+    [Cache Store] → TTL: 5min
+         ↓
+    [Performance Log]
+         ↓
+    Return Results
 ```
 
 ## Error Handling Flow
@@ -134,22 +138,23 @@ Return Results
                    ┌─────┴─────┐
                    │           │
                Success      Error
+                   │           │
                    │           ↓
                    │    [Error Boundary]
                    │           ↓
-                   │    ┌──────┴──────┐
-                   │    │             │
-                   │  Known      Unknown
-                   │    │             │
-                   │    ↓             ↓
-                   │ [Retry?]    [Log & Wrap]
-                   │    │             │
-                   │    ↓             ↓
-                   │ [Circuit     [User Error
-                   │  Breaker]     Message]
-                   │    │             │
-                   ↓    ↓             ↓
-              [Success Path]    [Error Path]
+                   │      ┌────┴────┐
+                   │      │         │
+                   │   Known     Unknown
+                   │      │         │
+                   │      ↓         ↓
+                   │  [Retry?]  [Log & Wrap]
+                   │      │         │
+                   │      ↓         ↓
+                   │  [Circuit   [User Error
+                   │   Breaker]   Message]
+                   │      │         │
+                   ↓      ↓         ↓
+              [Success Path]  [Error Path]
 ```
 
 ## Security Layers

@@ -89,14 +89,16 @@ Siehe [INSTALLATION.md](./INSTALLATION.md) für detaillierte Installationsanweis
 - [x] Error-Handling implementiert
 
 ### Phase 5: Vektor-Suche
-- [ ] Vektor-DB-Lösung implementieren (SQLite mit sqlite-vss)
-- [ ] Embedding-Funktionen integrieren (nomic-embed-text)
-- [ ] Semantic Search API
+- [x] Vektor-DB-Lösung implementieren (SQLite mit Cosine Similarity)
+- [x] Embedding-Funktionen integrieren (nomic-embed-text)
+- [x] Semantic Search API
 - [ ] Search UI-Komponente
 
 ### Phase 6: AI-Integration
-- [ ] Embedding-Modell lokal laden (nomic-embed-text)
-- [ ] Embedding-Service implementieren (768 Dimensionen)
+- [x] Embedding-Modell lokal laden (nomic-embed-text)
+- [x] Embedding-Service implementieren (768 Dimensionen)
+- [x] ONNX Runtime Web als primäre Engine
+- [x] transformers.js als Fallback-Engine
 - [ ] Optional: Text-Generation-Modell integrieren
 - [ ] Model-Management UI
 
