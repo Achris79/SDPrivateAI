@@ -202,7 +202,7 @@ Verwendet für:
 - CI/CD-Integration
 
 ### Aktualisierte Dokumentation
-- **IMPLEMENTATION_SUMMARY.md** - Erweitert um neue Features
+- **ARCHITECTURE_IMPLEMENTATION_SUMMARY.md** - Erweitert um neue Features
 - **README.md** - Projekt-Übersicht aktualisiert
 - **SECURITY.md** - Tauri-Security-Updates
 - **ERROR_HANDLING.md** - Error Boundary Integration
