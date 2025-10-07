@@ -195,37 +195,110 @@ const embeddingModels = getModelsByType('embedding');
 - Erste Verwendung: Download (einmalig)
 - Weitere Verwendungen: Sofortiges Laden aus Cache
 
+#### 8. Device-Aware Model Selection (NEU) ✨
 
-#### 8. Dokumentation
+**Neue Dateien:**
+```
+src/services/device/capabilities.ts          # Device Capability Detection
+src/services/device/model-recommendation.ts  # Model Recommendation System
+src/services/device/index.ts                 # Service Exports
+src/examples/device-aware-model-selection.ts # Usage Examples
+docs/DEVICE_AWARE_MODEL_SELECTION.md        # Comprehensive Documentation
+```
+
+**Features:**
+- ✅ Automatische Geräteerkennung (RAM, CPU, GPU)
+- ✅ Performance-Tier-Klassifizierung (low/medium/high)
+- ✅ Modell-Kompatibilitätsprüfung
+- ✅ Intelligente Modell-Empfehlungen
+- ✅ Ressourcen-basierte Modell-Filterung
+- ✅ Automatische Modell-Auswahl basierend auf Gerät
+
+**Device Detection:**
+```typescript
+import { getDeviceCapabilities } from './services/ai';
+
+const capabilities = getDeviceCapabilities();
+// Erkennt: RAM, CPU-Kerne, GPU, WebGL2, Platform (Desktop/Mobile)
+// Tier: 'low' | 'medium' | 'high'
+```
+
+**Modell-Anforderungen:**
+| Modell | Min RAM | CPU | Größe | Tier |
+|--------|---------|-----|-------|------|
+| phi-3-mini | 4GB | 4 Kerne | 2.3GB | medium |
+| phi-2 | 2GB | 2 Kerne | 1.7GB | low |
+| nomic-embed | 2GB | 2 Kerne | 548MB | low |
+| all-minilm | 1GB | 1 Kern | 90MB | low |
+
+**API Beispiele:**
+```typescript
+// Auto-Auswahl basierend auf Gerät
+await initializeAI({ autoSelectModel: true });
+
+// Kompatible Modelle anzeigen
+const compatible = getDeviceCompatibleModels();
+
+// Empfohlenes Modell abrufen
+const recommended = getDeviceRecommendedModel('embedding');
+
+// Kompatibilität prüfen
+if (isDeviceCompatible('phi-3-mini')) {
+  await initializeAI({ modelId: 'phi-3-mini' });
+}
+```
+
+**Vorteile:**
+- Verhindert Laden inkompatibler Modelle
+- Optimale Performance auf jedem Gerät
+- Intelligente Fallbacks für Low-End-Geräte
+- Transparente Ressourcenanforderungen
+
+
+#### 9. Dokumentation
 
 **Neu erstellt:**
 
-1. **`docs/AI_MODEL_SELECTION.md`** (9.0 KB)
+1. **`docs/DEVICE_AWARE_MODEL_SELECTION.md`** (10.2 KB) ✨ NEU
+   - Device Capability Detection
+   - Resource-Based Model Filtering
+   - Intelligent Model Recommendations
+   - Auto-Selection API
+   - Performance Tier Classification
+   - Best Practices
+
+2. **`docs/AI_MODEL_SELECTION.md`** (9.0 KB)
    - Flexible Model Selection Guide
    - Verfügbare Modelle
    - Model Switching API
    - Usage Examples
    - Best Practices
 
-2. **`docs/AI_LOADING_ENGINE.md`** (7.8 KB)
+3. **`docs/AI_LOADING_ENGINE.md`** (7.8 KB)
    - Vollständige Architektur-Dokumentation
    - Verwendungsbeispiele
    - Performance-Vergleich
    - Best Practices
    - Troubleshooting
 
-3. **`src/services/ai/loaders/README.md`** (5.3 KB)
+4. **`src/services/ai/loaders/README.md`** (5.3 KB)
    - Technische Dokumentation der Loader
    - Implementierungsdetails
    - Anleitung zum Hinzufügen neuer Loader
 
-4. **`src/examples/model-switching-examples.ts`** (4.5 KB)
+5. **`src/examples/device-aware-model-selection.ts`** (5.2 KB) ✨ NEU
+   - 7 vollständige Beispiele für Device-Aware Selection
+   - Capability Detection
+   - Compatibility Checking
+   - Auto-Selection
+
+6. **`src/examples/model-switching-examples.ts`** (4.5 KB)
    - 7 vollständige Beispiele für Model Selection
    - Model Switching
    - Listing und Filtering
    - Custom Models
 
-5. **`src/examples/ai-loading-engine-examples.ts`** (7.9 KB)
+7. **`src/examples/ai-loading-engine-examples.ts`** (7.9 KB)
    - 6 vollständige Beispiele
    - Verschiedene Strategien
    - Error Handling
@@ -235,7 +308,7 @@ const embeddingModels = getModelsByType('embedding');
 - `docs/TODO.md` - AI/ML Integration als abgeschlossen markiert
 - `docs/VECTOR_SEARCH.md` - Integration mit neuer Engine dokumentiert
 - `docs/VECTOR_SEARCH_IMPLEMENTATION.md` - Phase 1 als abgeschlossen markiert
-- `docs/IMPLEMENTATION_SUMMARY.md` - Flexible Model Selection hinzugefügt
+- `docs/IMPLEMENTATION_SUMMARY.md` - Device-Aware Model Selection hinzugefügt
 
 #### 9. Build & Tests
 
@@ -313,6 +386,28 @@ await switchModel('all-minilm');
 console.log(getCurrentModel()?.name); // "All-MiniLM-L6"
 ```
 
+### Device-Aware Auto-Selection ✨ NEU
+
+```typescript
+import { initializeAI, getDeviceCapabilities, getDeviceCompatibleModels } from './services/ai';
+
+// Auto-Auswahl basierend auf Gerät
+await initializeAI({ autoSelectModel: true });
+// Wählt automatisch das beste Modell für das Gerät
+
+// Geräteinformationen abrufen
+const capabilities = getDeviceCapabilities();
+console.log(`Device Tier: ${capabilities.tier}`);
+console.log(`RAM: ${capabilities.memory.totalGB}GB`);
+console.log(`CPU Cores: ${capabilities.cpu.cores}`);
+
+// Kompatible Modelle anzeigen
+const compatible = getDeviceCompatibleModels('embedding');
+compatible.forEach(model => {
+  console.log(`${model.name} - ${model.requirements.estimatedSizeMB}MB`);
+});
+```
+
 ### Nur WASM verwenden
 
 ```typescript
@@ -377,16 +472,21 @@ await initializeAI({
 ### Empfohlene Erweiterungen
 
 1. **UI für Model Selection** (Priorität: HOCH) ✨ NEU
-   - [ ] Model Selector Komponente erstellen
+   - [x] Device Capability Detection implementiert ✓
+   - [x] Model Compatibility Checking implementiert ✓
+   - [x] Auto-Select Model API implementiert ✓
+   - [ ] Model Selector UI Komponente erstellen
    - [ ] Download-Progress anzeigen
    - [ ] Aktuelles Model im UI anzeigen
-   - [ ] Model-Informationen (Dimension, Type) anzeigen
+   - [ ] Model-Informationen (Dimension, Type, Requirements) anzeigen
+   - [ ] Device-Tier-Badge im UI anzeigen
 
 2. **Modell-Bereitstellung** (Priorität: MITTEL)
    - [ ] ONNX-Modell für Phi-3 konvertieren und bereitstellen
    - [ ] ONNX-Modell für andere Modelle konvertieren
-   - [ ] Lokales Modell-Caching optimieren
+   - [x] Modell-Größen-Information für Cache-Management ✓
    - [ ] Modell-Update-Mechanismus
+   - [ ] Progressive Model Loading
 
 3. **Batch-Processing** (Priorität: MITTEL)
    - [ ] Batch-Embedding-Generierung
@@ -397,6 +497,7 @@ await initializeAI({
    - [ ] Metriken sammeln (Download-Zeit, Inferenz-Zeit)
    - [ ] Performance-Dashboard
    - [ ] Benchmark-Suite für verschiedene Modelle
+   - [ ] Device-basierte Performance-Metriken
 
 5. **Native Integration** (Priorität: NIEDRIG)
    - [ ] Tauri Command für native Inferenz
