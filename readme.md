@@ -57,6 +57,7 @@ Die vollständige Dokumentation findest du in folgenden Dateien:
 - **[SECURITY.md](./docs/SECURITY.md)** - 🔒 Sicherheitsrichtlinien & Best Practices
 - **[DATABASE_MIGRATIONS.md](./docs/DATABASE_MIGRATIONS.md)** - 🗄️ Datenbank-Migration-System
 - **[TODO.md](./docs/TODO.md)** - 📝 Aufgabenliste & offene Fragen
+- **[nextSteps.md](./docs/nextSteps.md)** - 🎯 **NEU: Projektanalyse & priorisierte Roadmap**
 - **[SUMMARY.md](./docs/SUMMARY.md)** - ✅ Projekt-Setup Übersicht
 
 ## 🏃 Quick Start
